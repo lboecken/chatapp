@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-function Form(props) {
-  const [serverMessage, setServerMessage] = useState('disconnnected');
+function SocketTest(props) {
+  const [connectionID, setConnectionID] = useState('disconnnected');
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     props.socket.on('connect', () => {
       props.socket.emit('connect event', { data: 'I am connected' });
+      props.socket.emit('load all messages', (payload) => {
+        console.log(payload);
+        setMessages(payload);
+      });
       console.log(props.socket.id);
-      setServerMessage(props.socket.id);
+      setConnectionID(props.socket.id);
     });
   }, []);
 
@@ -19,23 +23,7 @@ function Form(props) {
   props.socket.on('welcome from server', (payload) => console.log(payload));
   return (
     <div className='Form'>
-      <form>
-        <button
-          value='message from client'
-          onClick={(e) => {
-            e.preventDefault();
-            props.socket.emit('ping_server', { message: e.target.value });
-          }}>
-          Connect
-        </button>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            props.socket.emit('ping_server', { message: props.socket.id });
-          }}>
-          Connection ID
-        </button>
-      </form>
+      <h1>{connectionID}</h1>
       <Messages messages={messages} socket={props.socket} />
     </div>
   );
@@ -66,4 +54,4 @@ function Messages(props) {
     </div>
   );
 }
-export default Form;
+export default SocketTest;
