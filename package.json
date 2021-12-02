@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev_react": "npm start --prefix client",
+    "dev_start": "export FLASK_DEBUG=1 && flask run & npm run watch --prefix client"
   },
   "keywords": [],
   "author": "",

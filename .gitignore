@@ -28,3 +28,6 @@ htmlcov/
 #client
 **/node_modules
 **/build
+
+#development
+dev
