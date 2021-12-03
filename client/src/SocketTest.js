@@ -1,26 +1,38 @@
 import React, { useState, useEffect } from 'react';
 
+// Timestamp
+function getUtcSecondsSinceEpoch() {
+  const now = new Date();
+  const utcMilllisecondsSinceEpoch =
+    now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+  const utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000);
+  return utcSecondsSinceEpoch;
+}
+
 function SocketTest(props) {
   const [connectionID, setConnectionID] = useState('disconnnected');
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     props.socket.on('connect', () => {
-      props.socket.emit('connect event', { data: 'I am connected' });
-      props.socket.emit('load all messages', (payload) => {
-        console.log(payload);
-        setMessages(payload);
+      props.socket.on('welcome from server', (payload) => console.log(payload));
+      props.socket.on('messages from server', (payload) => {
+        setMessages(payload['db_messages']);
+        console.log(typeof payload['db_messages']);
+        console.log(payload['db_messages']);
       });
+      props.socket.emit('connect event', { data: 'I am connected' });
+      props.socket.emit('load all messages');
       console.log(props.socket.id);
       setConnectionID(props.socket.id);
     });
+    return function cleanup() {
+      props.socket.off('welcome from server');
+      props.socket.off('messages from server');
+      props.socket.off('connect');
+    };
   }, []);
 
-  props.socket.on('messages from server', (payload) => {
-    setMessages(payload['messages']);
-  });
-
-  props.socket.on('welcome from server', (payload) => console.log(payload));
   return (
     <div className='Form'>
       <h1>{connectionID}</h1>
@@ -36,7 +48,10 @@ function Messages(props) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          props.socket.emit('new message', { message: newMessage });
+          props.socket.emit('new message', {
+            message: newMessage,
+            timeStamp: getUtcSecondsSinceEpoch(),
+          });
         }}>
         <input
           placeholder='enter your message here'
@@ -48,7 +63,12 @@ function Messages(props) {
       </form>
       <ul>
         {props.messages.map((message) => {
-          return <li>{message}</li>;
+          return (
+            <li>
+              <h4>{message.timeStamp}</h4>
+              {message.message}
+            </li>
+          );
         })}
       </ul>
     </div>

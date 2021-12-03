@@ -1,17 +1,39 @@
-from flask import Flask, send_from_directory, request
+
+from flask import Flask, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 
 # Flask App init
 app = Flask(__name__, static_folder="client/build", static_url_path="")
-# socket IO config + init
+
+# Config
 app.config['SECRET_KEY'] = 'secret'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://lennart:password@localhost:5432/chatapp'
+# socket IO init
 socketio = SocketIO(app)
-# flask SQL Alchemy Config + init
-app.config['SQLALCHEMY_DATABSE_URI'] = 'sqlite:///test.db'
+# flask SQL Alchemy init
 db = SQLAlchemy(app)
-# test var for socket
-messages = []
+
+
+class User(db.Model):
+    username = db.Column(db.String(80), primary_key=True)
+    password = db.Column(db.String(80))
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+
+class Message(db.Model):
+    message = db.Column(db.Text)
+    time_stamp = db.Column(db.String(80), primary_key=True)
+
+    def as_dict():
+        return {m}
+
+    def __repr__(self) -> str:
+        return '<Message %r>' % self.message
+# Routing
 
 
 @app.route("/", defaults={"path": ""})
@@ -21,24 +43,48 @@ def index(path=False):
     return send_from_directory(app.static_folder, "index.html")
 
 
+# Socket listeners
+# test var for socket
+messages = []
+
+
 @socketio.on('connect event')
 def handle_my_event(data):
     print('my event on server fired')
     print(data['data'])
-    emit('welcome from server', {"message": 'hello from Flask-socketIO'})
+    emit('welcome from server', {"message": 'hello from server'})
 
 
 @socketio.on('new message')
 def handle_new_message(payload):
     messages.append(payload['message'])
-    print(messages)
+    new_db_entry = Message(
+        message=payload['message'], time_stamp=payload['timeStamp'])
+    db.session.add(new_db_entry)
+    db.session.commit()
+    db_messages = []
+    query = db.session.query(Message).all()
+    for entry in query:
+        print(entry.__dict__)
+        updated_entry = {'message': entry.__dict__['message'],
+                         'timeStamp': entry.__dict__['time_stamp']}
+        db_messages.append(updated_entry)
     emit('messages from server', {
-         "messages": messages}, broadcast=True, include_self=True)
+         "messages": messages, 'db_messages': db_messages}, broadcast=True, include_self=True)
 
 
 @socketio.on('load all messages')
 def handle_load_all_messages():
-    return messages
+    print(handle_load_all_messages.__name__)
+    db_messages = []
+    query = db.session.query(Message).all()
+    for entry in query:
+        print(entry.__dict__)
+        updated_entry = {'message': entry.__dict__['message'],
+                         'timeStamp': entry.__dict__['time_stamp']}
+        db_messages.append(updated_entry)
+    emit('messages from server', {
+         "messages": messages, 'db_messages': db_messages})
 
 
 if __name__ == "__main__":
