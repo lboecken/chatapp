@@ -17,7 +17,9 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model):
-    username = db.Column(db.String(80), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120))
+    name = db.Column(db.String(80))
     password = db.Column(db.String(80))
 
     def __repr__(self):
@@ -25,11 +27,9 @@ class User(db.Model):
 
 
 class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     time_stamp = db.Column(db.String(80), primary_key=True)
-
-    def as_dict():
-        return {m}
 
     def __repr__(self) -> str:
         return '<Message %r>' % self.message
@@ -75,7 +75,6 @@ def handle_new_message(payload):
 
 @socketio.on('load all messages')
 def handle_load_all_messages():
-    print(handle_load_all_messages.__name__)
     db_messages = []
     query = db.session.query(Message).all()
     for entry in query:
