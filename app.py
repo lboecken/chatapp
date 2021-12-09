@@ -16,23 +16,25 @@ socketio = SocketIO(app)
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120))
-    name = db.Column(db.String(80))
-    password = db.Column(db.String(80))
-
-    def __repr__(self):
-        return '<User %r>' % self.username
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(80), nullable=False)
 
 
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.Text)
-    time_stamp = db.Column(db.String(80), primary_key=True)
+class Channels(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
 
-    def __repr__(self) -> str:
-        return '<Message %r>' % self.message
+
+class Messages(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    timestamp_utc = db.Column(db.Integer, nullable=False)
+    channel_id = db.Column(db.Integer, db.ForeignKey(
+        'channels.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
 # Routing
 
 
@@ -58,16 +60,16 @@ def handle_my_event(data):
 @socketio.on('new message')
 def handle_new_message(payload):
     messages.append(payload['message'])
-    new_db_entry = Message(
-        message=payload['message'], time_stamp=payload['timeStamp'])
+    new_db_entry = Messages(
+        message=payload['message'], timestamp_utc=payload['timeStamp'], channel_id=1, user_id=1)
     db.session.add(new_db_entry)
     db.session.commit()
     db_messages = []
-    query = db.session.query(Message).all()
+    query = db.session.query(Messages).all()
     for entry in query:
         print(entry.__dict__)
         updated_entry = {'message': entry.__dict__['message'],
-                         'timeStamp': entry.__dict__['time_stamp']}
+                         'timeStamp': entry.__dict__['timestamp_utc']}
         db_messages.append(updated_entry)
     emit('messages from server', {
          "messages": messages, 'db_messages': db_messages}, broadcast=True, include_self=True)
@@ -76,11 +78,11 @@ def handle_new_message(payload):
 @socketio.on('load all messages')
 def handle_load_all_messages():
     db_messages = []
-    query = db.session.query(Message).all()
+    query = db.session.query(Messages).all()
     for entry in query:
         print(entry.__dict__)
         updated_entry = {'message': entry.__dict__['message'],
-                         'timeStamp': entry.__dict__['time_stamp']}
+                         'timeStamp': entry.__dict__['timestamp_utc']}
         db_messages.append(updated_entry)
     emit('messages from server', {
          "messages": messages, 'db_messages': db_messages})
