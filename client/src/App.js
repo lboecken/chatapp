@@ -1,23 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router';
 import './App.css';
+import axios from 'axios';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState();
-  const updateLogin = () => {
-    if (isLoggedIn) {
-      localStorage.clear();
-      setIsLoggedIn(false);
-    } else {
-      localStorage.setItem('TEST_TOKEN', 'authUser');
-      setIsLoggedIn(true);
-    }
+  const logout = () => {
+    sessionStorage.clear();
+    axios.get('../api/logout');
   };
   return (
     <div className='App'>
       <h1>Chat App</h1>
-      <button onClick={updateLogin}>Login/Logout</button>
-      <p>{isLoggedIn ? 'logged in' : 'logged out'}</p>
+      <form onSubmit={logout}>
+        <button type='submit'>Logout</button>
+      </form>
       <Outlet />
     </div>
   );

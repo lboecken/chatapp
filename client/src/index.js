@@ -32,10 +32,6 @@ ReactDOM.render(
             element={<PublicRoute element={<Register />} restricted={true} />}
           />
           <Route path='*' element={<NoMatch />} />
-          <Route
-            path='test'
-            element={<PublicRoute to='../login' restricted={true} />}
-          />
         </Route>
       </Routes>
     </BrowserRouter>

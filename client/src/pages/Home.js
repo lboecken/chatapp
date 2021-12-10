@@ -15,17 +15,17 @@ function Home(props) {
 
   useEffect(() => {
     props.socket.on('connect', () => {
-      props.socket.on('welcome from server', (payload) => console.log(payload));
-      props.socket.on('messages from server', (payload) => {
-        setMessages(payload['db_messages']);
-        console.log(typeof payload['db_messages']);
-        console.log(payload['db_messages']);
-      });
-      props.socket.emit('connect event', { data: 'I am connected' });
-      props.socket.emit('load all messages');
       console.log(props.socket.id);
       setConnectionID(props.socket.id);
     });
+    props.socket.on('welcome from server', (payload) => console.log(payload));
+    props.socket.on('messages from server', (payload) => {
+      setMessages(payload['db_messages']);
+      console.log(typeof payload['db_messages']);
+      console.log(payload['db_messages']);
+    });
+    props.socket.emit('connect event', { data: 'I am connected' });
+    props.socket.emit('load all messages');
     return function cleanup() {
       props.socket.off('welcome from server');
       props.socket.off('messages from server');
@@ -65,8 +65,10 @@ function Messages(props) {
         {props.messages.map((message) => {
           return (
             <li>
-              <h4>{message.timeStamp}</h4>
+              <h4>{message.userID}</h4>
               {message.message}
+              <hr />
+              {message.timeStamp}
             </li>
           );
         })}
