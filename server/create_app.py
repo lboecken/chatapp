@@ -6,14 +6,18 @@ from flask_session import Session
 from flask_socketio import SocketIO
 
 
-def create_app():
-    app = Flask(__name__, static_folder="../client/build", static_url_path="")
+def config_app(app):
     app.config['DEBUG'] = os.environ['DEBUG']
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
     app.config['SESSION_TYPE'] = os.environ['SESSION_TYPE']
     app.config['SESSION_SQLALCHEMY_TABLE'] = os.environ['SESSION_SQLALCHEMY_TABLE']
+
+
+def create_app():
+    app = Flask(__name__, static_folder="../client/build", static_url_path="")
+    config_app(app)
     db = SQLAlchemy(app)
     app.config['SESSION_SQLALCHEMY'] = db
     flask_sess = Session(app)
