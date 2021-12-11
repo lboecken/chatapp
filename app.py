@@ -1,29 +1,9 @@
-from server.sql_models import Users, Messages, Channels
 import functools
-from flask import Flask, send_from_directory, request
-from flask_session import Session
-from flask_login import LoginManager, current_user, login_user, logout_user
-from flask_socketio import SocketIO, emit, disconnect
-from flask_sqlalchemy import SQLAlchemy
-# Flask App init
-app = Flask(__name__, static_folder="client/build", static_url_path="")
-
-# Config
-app.config['SECRET_KEY'] = 'secret'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://lennart:password@localhost:5432/chatapp'
-app.config['SESSION_TYPE'] = 'sqlalchemy'
-app.config['SESSION_SQLALCHEMY_TABLE'] = 'sessions'
-
-# socket IO init
-socketio = SocketIO(app, manage_session=False)
-
-# flask SQL Alchemy init
-db = SQLAlchemy(app)
-
-# Flask-Login init
-login_manager = LoginManager()
-login_manager.init_app(app)
+from flask import send_from_directory, request
+from flask_login import current_user, login_user, logout_user, UserMixin
+from flask_socketio import emit, disconnect
+from server.create_app import app, db, socketio, login_manager, flask_sess
+from server.sql_models import Users, Channels, Messages
 
 
 @login_manager.user_loader
@@ -41,23 +21,31 @@ def authenticated_only(f):
     return wrapped
 
 
-# Session
-app.config['SESSION_SQLALCHEMY'] = db
-flask_session = Session(app)
+# class Users(UserMixin, db.Model):
+#     id = db.Column(db.Integer, primary_key=True, nullable=False)
+#     username = db.Column(db.String(80), nullable=False, unique=True)
+#     password = db.Column(db.String(80), nullable=False)
 
-# flask SQL alchemy models
+
+# class Channels(db.Model):
+#     id = db.Column(db.Integer, primary_key=True, nullable=False)
+#     name = db.Column(db.String(80), nullable=False)
+
+
+# class Messages(db.Model):
+#     id = db.Column(db.Integer, primary_key=True, nullable=False)
+#     message = db.Column(db.Text, nullable=False)
+#     timestamp_utc = db.Column(db.Integer, nullable=False)
+#     channel_id = db.Column(db.Integer, db.ForeignKey(
+#         'channels.id'), nullable=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 
 # Routing
-@app.route("/", defaults={"path": ""})
-@app.route("/<path>")
-@app.route('/')
-def index(path=False):
+@app.route('/', defaults={'path': ''})
+@app.route('/<path>')
+def index(path):
     return send_from_directory(app.static_folder, "index.html")
-
-
-# Socket listeners
-# test var for socket
 
 
 @app.route('/api/register', methods=['POST'])
