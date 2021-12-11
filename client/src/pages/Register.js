@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Register(props) {
+  const navigate = useNavigate();
   const registerNewUser = (formUsername, formPassword) => {
     console.log(formUsername, formPassword);
     axios
@@ -11,6 +13,8 @@ function Register(props) {
       })
       .then((response) => {
         console.log(response);
+        alert('you registered successfully');
+        navigate('../login', { replace: true });
       });
   };
 

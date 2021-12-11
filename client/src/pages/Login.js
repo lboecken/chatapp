@@ -1,9 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Navigate } from 'react-router-dom';
-import '../utilities/Login';
-import { isLogin } from '../utilities/Login';
-function Login() {
+
+function Login(props) {
+  const navigate = useNavigate();
   const loginUser = (formUsername, formPassword) => {
     axios
       .post('../api/login', {
@@ -17,6 +17,7 @@ function Login() {
           console.log('you are not logged in');
         } else {
           sessionStorage.setItem('TEST_TOKEN', 'authUser');
+          navigate('../', { replace: true });
         }
       });
   };
@@ -34,7 +35,13 @@ function Login() {
         <label>Password:</label>
         <input type='text' name='password'></input>
         <button type='submit'>Login</button>
-        <button type='button'>Register</button>
+        <button
+          type='button'
+          onClick={() => {
+            navigate('../register', { replace: true });
+          }}>
+          Register
+        </button>
       </form>
     </div>
   );

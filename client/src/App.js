@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router';
 import './App.css';
 import axios from 'axios';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const logout = () => {
     sessionStorage.clear();
     axios.get('../api/logout');

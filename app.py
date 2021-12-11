@@ -1,12 +1,10 @@
-import functools
-from flask import send_from_directory, request
+import pprint
+from flask import send_from_directory, request, session
 from flask_login import current_user, login_user, logout_user
 from flask_socketio import emit, disconnect
-from server.create_app import app, db, socketio, login_manager, flask_sess
+from server import app, db, socketio, login_manager, flask_sess
 from server.sql_models import Users, Channels, Messages
 from server.auth import authenticated_only
-
-# Routing
 
 
 @app.route('/', defaults={'path': ''})
@@ -36,6 +34,12 @@ def login():
             user = Users.query.filter_by(username=data['username']).first()
             if data['password'] == user.password:
                 login_user(user)
+                # testing of session
+                # session['username'] = user.username
+                # session['password'] = user.password
+                print(session)
+                print(session.sid)
+                # finished testing of session
                 return 'logged in '
             return 'wrong password'
         except AttributeError:
@@ -44,22 +48,22 @@ def login():
         return '405 METHOD NOT ALLOWED'
 
 
-@app.route('/api/logout')
+@ app.route('/api/logout')
 def logout():
     logout_user()
     return 'logged out'
 
 
-@socketio.on('connect event')
-@authenticated_only
+@ socketio.on('connect event')
+@ authenticated_only
 def handle_my_event(data):
     print('my event on server fired')
     print(data['data'])
     emit('welcome from server', {"message": 'hello from server'})
 
 
-@socketio.on('new message')
-@authenticated_only
+@ socketio.on('new message')
+@ authenticated_only
 def handle_new_message(payload):
     new_db_entry = Messages(
         message=payload['message'], timestamp_utc=payload['timeStamp'], channel_id=1, user_id=1)
@@ -80,8 +84,8 @@ def handle_new_message(payload):
     emit_new_messages()
 
 
-@socketio.on('load all messages')
-@authenticated_only
+@ socketio.on('load all messages')
+@ authenticated_only
 def handle_load_all_messages():
     db_messages = []
     query = db.session.query(Messages).all()

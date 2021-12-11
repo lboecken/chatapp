@@ -1,5 +1,5 @@
 import functools
-from server.create_app import login_manager
+from server import login_manager
 from server.sql_models import Users
 from flask_login import current_user
 from flask_socketio import disconnect
