@@ -30,9 +30,16 @@ def register_new_user():
 def login():
     if request.method == 'POST':
         data = request.get_json(silent=True)
+        print(data)
+        print(session)
         try:
             user = Users.query.filter_by(username=data['username']).first()
             if data['password'] == user.password:
+                login_user(user)
+                print(dir(user))
+                print(user.username)
+                print(current_user.is_authenticated)
+                print(session)
                 return 'logged in '
             return 'wrong password'
         except AttributeError:
@@ -44,14 +51,16 @@ def login():
 @ app.route('/api/logout', methods=['POST'])
 def logout():
     logout_user()
+    disconnect()
     return 'logged out'
 
 
 @ socketio.on('new message')
 @ authenticated_only
 def handle_new_message(payload):
+    print(session)
     new_db_entry = Messages(
-        message=payload['message'], timestamp_utc=payload['timeStamp'], channel_id=1, user_id=1)
+        message=payload['message'], timestamp_utc=payload['timeStamp'], channel_id=1, user_id=session['_user_id'])
     db.session.add(new_db_entry)
     db.session.commit()
     db_messages = []
@@ -70,7 +79,7 @@ def handle_new_message(payload):
 
 
 @ socketio.on('load all messages')
-@ authenticated_only
+# @ authenticated_only
 def handle_load_all_messages():
     db_messages = []
     query = db.session.query(Messages).all()
