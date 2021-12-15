@@ -1,75 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import LogOutButton from '../components/LogOutButton';
-
+import Messages from '../components/Messages';
 // Timestamp
-function getUtcMillisecondsSinceEpoch() {
-  const now = new Date();
-  const utcMilllisecondsSinceEpoch = now.getTime();
-  const utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000);
-  return utcSecondsSinceEpoch;
-}
 
 function Home(props) {
-  const [connectionID, setConnectionID] = useState('disconnnected');
-  const [messages, setMessages] = useState([]);
-
+  const [messages, dispatch] = useReducer(updateMessages, []);
+  function updateMessages(messages, action) {
+    switch (action.type) {
+      case 'CLEAR_MESSAGES':
+        return;
+      case 'NEW_MESSAGE':
+        return [...messages, action.data];
+      case 'ALL_MESSAGES':
+        console.log(action.data);
+        console.log(typeof action.data);
+        return action.data;
+    }
+  }
   useEffect(() => {
-    props.socket.on('connect', () => {
-      console.log(props.socket.id);
-      setConnectionID(props.socket.id);
+    props.socket.on('connect');
+    props.socket.emit('load all messages', (payload) => {
+      dispatch({ type: 'ALL_MESSAGES', data: payload['db_messages'] });
     });
-    props.socket.on('messages from server', (payload) => {
-      setMessages(payload['db_messages']);
+    props.socket.on('message from server', (payload) => {
+      dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
     });
-    props.socket.emit('load all messages');
     return function cleanup() {
-      props.socket.off('messages from server');
+      props.socket.off('message from server');
       props.socket.off('connect');
     };
   }, []);
 
   return (
     <div className='Form'>
-      <h1>{connectionID}</h1>
       <LogOutButton />
       <Messages messages={messages} socket={props.socket} />
     </div>
   );
 }
 
-function Messages(props) {
-  const [newMessage, setNewMessage] = useState();
-  return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          props.socket.emit('new message', {
-            message: newMessage,
-            timeStamp: getUtcMillisecondsSinceEpoch(),
-          });
-        }}>
-        <input
-          placeholder='enter your message here'
-          value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-          }}></input>
-        <input type='submit' />
-      </form>
-      <ul>
-        {props.messages.map((message) => {
-          return (
-            <li>
-              <h4>{message.userID}</h4>
-              {message.message}
-              <hr />
-              {message.timeStamp}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
 export default Home;
