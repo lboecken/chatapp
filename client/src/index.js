@@ -1,6 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useOutletContext,
+} from 'react-router-dom';
 import './index.css';
 import App from './App';
 
@@ -8,8 +14,6 @@ import Home from './pages/Home';
 import NoMatch from './pages/NoMatch';
 import Login from './pages/Login';
 import Register from './pages/Register';
-
-import { isLogin } from './utilities/Login';
 
 const { io } = require('socket.io-client');
 const socket = io();
@@ -40,7 +44,8 @@ ReactDOM.render(
 );
 
 function PublicRoute(props) {
-  if (isLogin() && props.restricted) {
+  const [isLoggedIn, setIsLoggedIn] = useOutletContext();
+  if (isLoggedIn && props.restricted) {
     return <Navigate to='../' replace={true} />;
   } else {
     return props.element;
@@ -48,7 +53,8 @@ function PublicRoute(props) {
 }
 
 function PrivateRoute(props) {
-  if (isLogin()) {
+  const [isLoggedIn, setIsLoggedIn] = useOutletContext();
+  if (isLoggedIn) {
     return props.element;
   } else {
     return <Navigate to='../login' replace={true} />;

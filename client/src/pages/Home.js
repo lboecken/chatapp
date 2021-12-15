@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import LogOutButton from '../components/LogOutButton';
 
 // Timestamp
-function getUtcSecondsSinceEpoch() {
+function getUtcMillisecondsSinceEpoch() {
   const now = new Date();
-  const utcMilllisecondsSinceEpoch =
-    now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+  const utcMilllisecondsSinceEpoch = now.getTime();
   const utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000);
   return utcSecondsSinceEpoch;
 }
@@ -18,16 +18,11 @@ function Home(props) {
       console.log(props.socket.id);
       setConnectionID(props.socket.id);
     });
-    props.socket.on('welcome from server', (payload) => console.log(payload));
     props.socket.on('messages from server', (payload) => {
       setMessages(payload['db_messages']);
-      console.log(typeof payload['db_messages']);
-      console.log(payload['db_messages']);
     });
-    props.socket.emit('connect event', { data: 'I am connected' });
     props.socket.emit('load all messages');
     return function cleanup() {
-      props.socket.off('welcome from server');
       props.socket.off('messages from server');
       props.socket.off('connect');
     };
@@ -36,6 +31,7 @@ function Home(props) {
   return (
     <div className='Form'>
       <h1>{connectionID}</h1>
+      <LogOutButton />
       <Messages messages={messages} socket={props.socket} />
     </div>
   );
@@ -50,7 +46,7 @@ function Messages(props) {
           e.preventDefault();
           props.socket.emit('new message', {
             message: newMessage,
-            timeStamp: getUtcSecondsSinceEpoch(),
+            timeStamp: getUtcMillisecondsSinceEpoch(),
           });
         }}>
         <input

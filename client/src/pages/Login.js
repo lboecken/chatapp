@@ -1,8 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 
 function Login(props) {
+  const [isLoggedIn, setIsLoggedIn] = useOutletContext();
   const navigate = useNavigate();
   const loginUser = (formUsername, formPassword) => {
     axios
@@ -16,7 +17,7 @@ function Login(props) {
         if (response.data !== 'logged in ') {
           console.log('you are not logged in');
         } else {
-          sessionStorage.setItem('TEST_TOKEN', 'authUser');
+          setIsLoggedIn(true);
           navigate('../', { replace: true });
         }
       });

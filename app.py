@@ -33,13 +33,6 @@ def login():
         try:
             user = Users.query.filter_by(username=data['username']).first()
             if data['password'] == user.password:
-                login_user(user)
-                # testing of session
-                # session['username'] = user.username
-                # session['password'] = user.password
-                print(session)
-                print(session.sid)
-                # finished testing of session
                 return 'logged in '
             return 'wrong password'
         except AttributeError:
@@ -48,18 +41,10 @@ def login():
         return '405 METHOD NOT ALLOWED'
 
 
-@ app.route('/api/logout')
+@ app.route('/api/logout', methods=['POST'])
 def logout():
     logout_user()
     return 'logged out'
-
-
-@ socketio.on('connect event')
-@ authenticated_only
-def handle_my_event(data):
-    print('my event on server fired')
-    print(data['data'])
-    emit('welcome from server', {"message": 'hello from server'})
 
 
 @ socketio.on('new message')
@@ -90,10 +75,9 @@ def handle_load_all_messages():
     db_messages = []
     query = db.session.query(Messages).all()
     for entry in query:
-        print(entry.__dict__)
-        updated_entry = {'message': entry.__dict__['message'],
-                         'timeStamp': entry.__dict__['timestamp_utc'],
-                         'userID': entry.__dict__['user_id']}
+        updated_entry = {'message': entry.message,
+                         'timeStamp': entry.timestamp_utc,
+                         'userID': entry.user_id}
         db_messages.append(updated_entry)
     emit('messages from server', {
          'db_messages': db_messages})
