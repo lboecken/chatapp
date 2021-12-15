@@ -1,9 +1,8 @@
-import pprint
 from flask import send_from_directory, request, session
 from flask_login import current_user, login_user, logout_user
 from flask_socketio import emit, disconnect
 from server import app, db, socketio, login_manager, flask_sess
-from server.sql_models import Users, Channels, Messages
+from server.sql_models import Users, Rooms, Messages
 from server.auth import authenticated_only
 
 
@@ -30,12 +29,10 @@ def register_new_user():
 def login():
     if request.method == 'POST':
         data = request.get_json(silent=True)
-        print(data)
-        print(session)
         try:
             user = Users.query.filter_by(username=data['username']).first()
             if data['password'] == user.password:
-                login_user(user)
+                login_user(user, remember=True)
                 return 'logged in '
             return 'wrong password'
         except AttributeError:
@@ -56,7 +53,7 @@ def logout():
 def handle_new_message(payload):
     print(session)
     new_db_entry = Messages(
-        message=payload['message'], timestamp_utc=payload['timeStamp'], channel_id=1, user_id=session['_user_id'])
+        message=payload['message'], timestamp_utc=payload['timeStamp'], room_id=1, user_id=session['_user_id'])
     db.session.add(new_db_entry)
     db.session.commit()
     new_message = {
@@ -77,7 +74,8 @@ def handle_load_all_messages():
         updated_entry = {'message': entry.message,
                          'timeStamp': entry.timestamp_utc,
                          'userID': entry.user_id}
-        db_messages.append(updated_entry)
+        db_messages.insert(0, updated_entry)
+
     return {'db_messages': db_messages}
 
 

@@ -13,7 +13,6 @@ def config_app(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
     app.config['SESSION_TYPE'] = os.environ['SESSION_TYPE']
     app.config['SESSION_SQLALCHEMY_TABLE'] = os.environ['SESSION_SQLALCHEMY_TABLE']
-    app.config['REMEMBER_COOKIE_DURATION'] = os.environ['REMEMBER_COOKIE_DURATION']
 
 
 def create_app():

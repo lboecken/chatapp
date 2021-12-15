@@ -15,8 +15,7 @@ import NoMatch from './pages/NoMatch';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
-const { io } = require('socket.io-client');
-const socket = io();
+
 
 ReactDOM.render(
   <React.StrictMode>
@@ -25,7 +24,7 @@ ReactDOM.render(
         <Route path='/' element={<App />}>
           <Route
             path='/'
-            element={<PrivateRoute element={<Home socket={socket} />} />}
+            element={<PrivateRoute element={<Home/>} />}
           />
           <Route
             path='login'

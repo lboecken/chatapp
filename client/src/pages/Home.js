@@ -1,40 +1,43 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 import LogOutButton from '../components/LogOutButton';
-import Messages from '../components/Messages';
-// Timestamp
+import Room from '../components/Rooms';
+import RoomsNavbar from '../components/RoomsNavbar';
+const { io } = require('socket.io-client');
+const socket = io();
 
-function Home(props) {
+function Home() {
+  const [currentRoom, setCurrentRoom] = useState('default');
   const [messages, dispatch] = useReducer(updateMessages, []);
   function updateMessages(messages, action) {
     switch (action.type) {
       case 'CLEAR_MESSAGES':
         return;
       case 'NEW_MESSAGE':
-        return [...messages, action.data];
+        return [action.data, ...messages];
       case 'ALL_MESSAGES':
-        console.log(action.data);
-        console.log(typeof action.data);
         return action.data;
     }
   }
   useEffect(() => {
-    props.socket.on('connect');
-    props.socket.emit('load all messages', (payload) => {
+    socket.on('connect');
+    socket.emit('load all messages', (payload) => {
       dispatch({ type: 'ALL_MESSAGES', data: payload['db_messages'] });
     });
-    props.socket.on('message from server', (payload) => {
+    socket.on('message from server', (payload) => {
       dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
     });
     return function cleanup() {
-      props.socket.off('message from server');
-      props.socket.off('connect');
+      socket.off('message from server');
+      socket.off('connect');
     };
   }, []);
 
   return (
-    <div className='Form'>
+    <div>
       <LogOutButton />
-      <Messages messages={messages} socket={props.socket} />
+      <RoomsNavbar setCurrentRoom={setCurrentRoom} />
+      <h1>{currentRoom}</h1>
+      <Room messages={messages} name='default' socket={socket} />
     </div>
   );
 }
