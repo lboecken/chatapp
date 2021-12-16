@@ -2,6 +2,13 @@ function RoomsNavbar(props) {
   const updateRoom = (e) => {
     e.preventDefault();
     props.setCurrentRoom(e.target.value);
+    props.socket.emit(
+      'UPDATE_ROOM',
+      { roomName: e.target.value },
+      (payload) => {
+        console.log(payload);
+      }
+    );
   };
   return (
     <div>

@@ -15,17 +15,12 @@ import NoMatch from './pages/NoMatch';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
-
-
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<App />}>
-          <Route
-            path='/'
-            element={<PrivateRoute element={<Home/>} />}
-          />
+          <Route path='/' element={<PrivateRoute element={<Home />} />} />
           <Route
             path='login'
             element={<PublicRoute element={<Login />} restricted={true} />}
@@ -43,7 +38,7 @@ ReactDOM.render(
 );
 
 function PublicRoute(props) {
-  const [isLoggedIn, setIsLoggedIn] = useOutletContext();
+  const [isLoggedIn] = useOutletContext();
   if (isLoggedIn && props.restricted) {
     return <Navigate to='../' replace={true} />;
   } else {
@@ -52,7 +47,7 @@ function PublicRoute(props) {
 }
 
 function PrivateRoute(props) {
-  const [isLoggedIn, setIsLoggedIn] = useOutletContext();
+  const [isLoggedIn] = useOutletContext();
   if (isLoggedIn) {
     return props.element;
   } else {

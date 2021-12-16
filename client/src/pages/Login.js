@@ -5,31 +5,26 @@ import axios from 'axios';
 function Login(props) {
   const [isLoggedIn, setIsLoggedIn] = useOutletContext();
   const navigate = useNavigate();
-  const loginUser = (formUsername, formPassword) => {
-    axios
-      .post('../api/login', {
-        username: formUsername,
-        password: formPassword,
-      })
-      .then((response) => {
-        console.log(response);
-        console.log(response.data);
-        if (response.data !== 'logged in ') {
-          console.log('you are not logged in');
-        } else {
-          setIsLoggedIn(true);
-          navigate('../', { replace: true });
-        }
-      });
+  const loginUser = (data) => {
+    axios.post('../api/login', data).then((response) => {
+      if (response.data !== 'logged in ') {
+      } else {
+        setIsLoggedIn(true);
+        navigate('../', { replace: true });
+      }
+    });
   };
   return (
     <div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          const username = e.target.username.value;
-          const password = e.target.password.value;
-          loginUser(username, password);
+          const data = {
+            username: e.target.username.value,
+            password: e.target.password.value,
+            remember: true,
+          };
+          loginUser(data);
         }}>
         <label>Username:</label>
         <input type='text' name='username'></input>
@@ -49,5 +44,3 @@ function Login(props) {
 }
 
 export default Login;
-
-// TODO react forms

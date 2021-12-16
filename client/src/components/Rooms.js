@@ -1,7 +1,7 @@
 import Messages from '../components/Messages';
 import NewMessageInput from '../components/NewMessageInput';
 
-function Room(props) {
+function Rooms(props) {
   return (
     <div>
       <NewMessageInput socket={props.socket} />
@@ -10,4 +10,4 @@ function Room(props) {
   );
 }
 
-export default Room;
+export default Rooms;
