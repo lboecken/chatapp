@@ -12,10 +12,10 @@ def config_app(app):
     app.config['SESSION_TYPE'] = os.environ['SESSION_TYPE']
     app.config['SESSION_SQLALCHEMY_TABLE'] = os.environ['SESSION_SQLALCHEMY_TABLE']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
-    database_uri = os.environ['DATABASE_URI']
+    database_uri = os.environ['DATABASE_URL']
     if database_uri.startswith('postgre://'):
         database_uri = database_uri.replace("postgres://", "postgresql://", 1)
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
+    app.config['SQLALCHEMY_DATABASE_URL'] = database_uri
 
 
 def create_app():
