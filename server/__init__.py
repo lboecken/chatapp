@@ -9,10 +9,13 @@ from flask_socketio import SocketIO
 def config_app(app):
     app.config['DEBUG'] = os.environ['DEBUG']
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
     app.config['SESSION_TYPE'] = os.environ['SESSION_TYPE']
     app.config['SESSION_SQLALCHEMY_TABLE'] = os.environ['SESSION_SQLALCHEMY_TABLE']
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
+    database_uri = os.environ['DATABASE_URI']
+    if database_uri.startswith('postgre://'):
+        database_uri = database_uri.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 
 
 def create_app():
