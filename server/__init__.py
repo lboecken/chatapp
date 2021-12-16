@@ -15,7 +15,7 @@ def config_app(app):
     database_uri = os.environ['DATABASE_URL']
     if database_uri.startswith('postgre://'):
         database_uri = database_uri.replace("postgres://", "postgresql://", 1)
-    app.config['SQLALCHEMY_DATABASE_URL'] = database_uri
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 
 
 def create_app():
