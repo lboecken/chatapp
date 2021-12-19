@@ -1,12 +1,76 @@
 import os
-from flask import send_from_directory, request, session, Response
-from flask_login import login_user, logout_user, current_user
+import functools
+from flask import Flask, send_from_directory, request, session
+from flask_login import LoginManager, login_user, logout_user, current_user, UserMixin
 from flask_session import Session
-from flask_socketio import emit, disconnect, join_room, leave_room
-from server import app, db, socketio
-from server.sql_models import Users, Rooms, Messages
-from server.auth import authenticated_only
+from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
+from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
+
+
+def config_app(app):
+    app.config['DEBUG'] = os.environ['DEBUG']
+    app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+    app.config['SESSION_TYPE'] = os.environ['SESSION_TYPE']
+    app.config['SESSION_SQLALCHEMY_TABLE'] = os.environ['SESSION_SQLALCHEMY_TABLE']
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
+    database_uri = os.environ['DATABASE_URL']
+    if database_uri.startswith('postgres://'):
+        database_uri = database_uri.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
+
+
+def create_app():
+    app = Flask(__name__, static_folder="./client/build", static_url_path="")
+    config_app(app)
+    db = SQLAlchemy(app)
+    app.config['SESSION_SQLALCHEMY'] = db
+    flask_sess = Session(app)
+    socketio = SocketIO(app, manage_session=False)
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    return [app, db, socketio, login_manager, flask_sess]
+
+
+app, db, socketio, login_manager, flask_sess = create_app()
+
+
+class Users(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    username = db.Column(db.String(80), nullable=False, unique=True)
+    password = db.Column(db.String(80), nullable=False)
+
+
+class Rooms(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+
+
+class Messages(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    timestamp_utc = db.Column(db.Integer, nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey(
+        'rooms.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+def authenticated_only(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not current_user.is_authenticated:
+            disconnect()
+        else:
+            return f(*args, **kwargs)
+    return wrapped
+
+# ROUTES
 
 
 @app.route('/', defaults={'path': ''})
