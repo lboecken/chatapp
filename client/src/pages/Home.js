@@ -19,13 +19,11 @@ function Home() {
     }
   }
   useEffect(() => {
-    socket.on('connect');
     socket.on('message from server', (payload) => {
       dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
     });
     return function cleanup() {
       socket.off('message from server');
-      socket.off('connect');
     };
   }, []);
 

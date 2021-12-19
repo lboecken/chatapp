@@ -1,6 +1,7 @@
 import os
 from flask import send_from_directory, request, session, Response
 from flask_login import login_user, logout_user, current_user
+from flask_session import Session
 from flask_socketio import emit, disconnect, join_room, leave_room
 from server import app, db, socketio
 from server.sql_models import Users, Rooms, Messages
@@ -55,11 +56,6 @@ def validate_previous_session():
 @app.route('/api/logout', methods=['POST'])
 def logout():
     logout_user()
-    response = Response()
-    response.delete_cookie(key='session',
-                           path='/',
-                           domain=os.environ['COOKIE_DOMAIN'])
-    disconnect()
     return 'logged out'
 
 
