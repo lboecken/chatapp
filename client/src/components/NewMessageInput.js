@@ -7,7 +7,7 @@ function NewMessageInput(props) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        props.socket.emit('new message', {
+        props.socket.emit('new-message', {
           message: newMessage,
           timeStamp: getUtcSecondsSinceEpoch(),
         });

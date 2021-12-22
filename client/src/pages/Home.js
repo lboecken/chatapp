@@ -19,19 +19,19 @@ function Home() {
     }
   }
   useEffect(() => {
-    socket.on('message from server', (payload) => {
+    socket.on('message-from-server', (payload) => {
       dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
     });
     return function cleanup() {
-      socket.off('message from server');
+      socket.off('message-from-server');
     };
   }, []);
 
   useEffect(() => {
     dispatch({ type: 'CLEAR_MESSAGES', data: [] });
-    socket.emit('update room', { roomName: currentRoom }, (payload) => {
+    socket.emit('update-room', { roomName: currentRoom }, (payload) => {
       console.log(payload);
-      socket.emit('load all messages', (payload) => {
+      socket.emit('load-all-messages', (payload) => {
         dispatch({ type: 'ALL_MESSAGES', data: payload['db_messages'] });
         console.log(payload);
       });
