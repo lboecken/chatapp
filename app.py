@@ -1,5 +1,6 @@
 import os
 import functools
+from dotenv import load_dotenv
 from flask import Flask, send_from_directory, request, session
 from flask_login import LoginManager, login_user, logout_user, current_user, UserMixin
 from flask_session import Session
@@ -9,12 +10,15 @@ from passlib.hash import sha256_crypt
 
 
 def config_app(app):
-    app.config['DEBUG'] = os.environ['DEBUG']
-    app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    app.config['SESSION_TYPE'] = os.environ['SESSION_TYPE']
-    app.config['SESSION_SQLALCHEMY_TABLE'] = os.environ['SESSION_SQLALCHEMY_TABLE']
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
-    database_uri = os.environ['DATABASE_URL']
+    load_dotenv()
+    app.config['DEBUG'] = os.getenv('DEBUG')
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['SESSION_TYPE'] = os.getenv('SESSION_TYPE')
+    app.config['SESSION_SQLALCHEMY_TABLE'] = os.getenv(
+        'SESSION_SQLALCHEMY_TABLE')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv(
+        'SQLALCHEMY_TRACK_MODIFICATIONS')
+    database_uri = os.getenv('DATABASE_URL')
     if database_uri.startswith('postgres://'):
         database_uri = database_uri.replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
@@ -40,6 +44,7 @@ class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     username = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
+    messages = db.relationship('Messages', backref='user', lazy=True)
 
 
 class Rooms(db.Model):
@@ -69,6 +74,7 @@ def authenticated_only(f):
         else:
             return f(*args, **kwargs)
     return wrapped
+
 
 # ROUTES
 
@@ -137,6 +143,15 @@ def update_room(payload):
 @socketio.on('new message')
 @authenticated_only
 def handle_new_message(payload):
+    user = db.session.query(Users).filter(
+        Users.id == session.get('_user_id')).first()
+    new_message = {
+        'message': payload['message'],
+        'timeStamp': payload['timeStamp'],
+        'userID': user.username
+    }
+    emit('message from server', {
+         "db_message": new_message}, broadcast=True, include_self=True, to=session.get('room'))
     new_db_entry = Messages(
         message=payload['message'],
         timestamp_utc=payload['timeStamp'],
@@ -144,13 +159,6 @@ def handle_new_message(payload):
         user_id=session.get('_user_id'))
     db.session.add(new_db_entry)
     db.session.commit()
-    new_message = {
-        'message': payload['message'],
-        'timeStamp': payload['timeStamp'],
-        'userID': session.get('_user_id')
-    }
-    emit('message from server', {
-         "db_message": new_message}, broadcast=True, include_self=True, to=session.get('room'))
 
 
 @socketio.on('load all messages')
@@ -160,11 +168,13 @@ def handle_load_all_messages():
     print(session.get('room'))
     query = db.session.query(Messages).filter(
         Messages.room_id == session.get('room')).all()
-
     for entry in query:
+        print(entry.__dict__)
+        print(entry.user)
+        print(entry.user.__dict__)
         updated_entry = {'message': entry.message,
                          'timeStamp': entry.timestamp_utc,
-                         'userID': entry.user_id}
+                         'userID': entry.user.username}
         db_messages.insert(0, updated_entry)
     return {'db_messages': db_messages}
 
