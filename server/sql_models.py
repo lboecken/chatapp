@@ -1,11 +1,12 @@
 from flask_login import UserMixin
-from app import db
+from server import db
 
 
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     username = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
+    messages = db.relationship('Messages', backref='user', lazy=True)
 
 
 class Rooms(db.Model):
