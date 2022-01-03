@@ -9,8 +9,6 @@ function LogOutButton() {
         <button
           onClick={() => {
             setIsLoggedIn(false);
-            document.cookie =
-              'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             axios.post('../api/logout');
           }}>
           Logout

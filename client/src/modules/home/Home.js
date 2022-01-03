@@ -1,8 +1,8 @@
 import React, { useReducer, useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import LogOutButton from '../components/LogOutButton';
-import Rooms from '../components/Rooms';
-import RoomsNavbar from '../components/RoomsNavbar';
+import LogOutButton from 'modules/home/LogOutButton';
+import Rooms from 'modules/home/Rooms';
+import RoomsNavbar from 'modules/home/RoomsNavbar';
 
 function Home() {
   const [isLoggedIn, setIsLoggedIn, socket] = useOutletContext();

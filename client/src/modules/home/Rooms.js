@@ -1,5 +1,5 @@
-import Messages from '../components/Messages';
-import NewMessageInput from '../components/NewMessageInput';
+import Messages from 'modules/home/Messages';
+import NewMessageInput from 'modules/home/NewMessageInput';
 
 function Rooms(props) {
   return (

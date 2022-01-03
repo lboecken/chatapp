@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getPossibleRooms } from '../helpers';
+import { getPossibleRooms } from '../../helpers';
 function RoomsNavbar(props) {
   const [possibleRooms, setPossibleRooms] = useState([]);
   const updateRoom = (e) => {

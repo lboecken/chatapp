@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getUtcSecondsSinceEpoch } from '../helpers';
+import { getUtcSecondsSinceEpoch } from '../../helpers';
 
 function NewMessageInput(props) {
   const [newMessage, setNewMessage] = useState();

@@ -10,10 +10,10 @@ import {
 import './index.css';
 import App from './App';
 
-import Home from './pages/Home';
-import NoMatch from './pages/NoMatch';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Home from 'modules/home/Home';
+import NoMatch from 'modules/nomatch/NoMatch';
+import Login from 'modules/login/Login';
+import Register from 'modules/register/Register';
 
 ReactDOM.render(
   <React.StrictMode>
