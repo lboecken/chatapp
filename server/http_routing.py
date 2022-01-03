@@ -2,7 +2,7 @@ from passlib.hash import sha256_crypt
 from flask import request, send_from_directory
 from flask_login import login_user, current_user, logout_user
 from server import app, db
-from server.sql_models import Users
+from server.sql_models import Rooms, Users
 
 
 @app.route('/', defaults={'path': ''})
@@ -54,3 +54,10 @@ def logout():
     return 'logged out'
 
 
+@app.route('/api/get-possible-rooms', methods=['GET'])
+def get_possible_rooms():
+    possible_rooms = []
+    rooms = Rooms.query.all()
+    for room in rooms:
+        possible_rooms.append(room.name)
+    return {'data': possible_rooms}
