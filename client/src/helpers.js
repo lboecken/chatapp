@@ -1,16 +1,28 @@
-import axios from 'axios';
+import { useOutletContext, Navigate } from 'react-router-dom';
 
-export function getUtcSecondsSinceEpoch() {
-  const now = new Date();
-  const utcMilllisecondsSinceEpoch = now.getTime();
-  const utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000);
-  return utcSecondsSinceEpoch;
+export function useContextManager() {
+  const { isLoggedIn, setIsLoggedIn, socket } = useOutletContext();
+  return {
+    isLoggedIn: isLoggedIn,
+    setIsLoggedIn: setIsLoggedIn,
+    socket: socket,
+  };
 }
 
-export function getPossibleRooms() {
-  axios('./api/get-possible-rooms').then((response) => {
-    console.log(response['data']);
-    console.log(response);
-    return response['data'];
-  });
+export function PublicRoute({ restricted, element }) {
+  const { isLoggedIn } = useContextManager();
+  if (isLoggedIn && restricted) {
+    return <Navigate to='../' replace={true} />;
+  } else {
+    return element;
+  }
+}
+
+export function PrivateRoute({ element }) {
+  const { isLoggedIn } = useContextManager();
+  if (isLoggedIn) {
+    return element;
+  } else {
+    return <Navigate to='../login' replace={true} />;
+  }
 }

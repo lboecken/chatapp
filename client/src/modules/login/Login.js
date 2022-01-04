@@ -3,7 +3,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 
 function Login(props) {
-  const [isLoggedIn, setIsLoggedIn] = useOutletContext();
+  const { setIsLoggedIn } = useOutletContext();
   const navigate = useNavigate();
   const loginUser = (data) => {
     axios.post('../api/login', data).then((response) => {

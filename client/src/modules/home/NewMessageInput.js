@@ -1,8 +1,20 @@
 import { useState } from 'react';
-import { getUtcSecondsSinceEpoch } from '../../helpers';
+import { getUtcSecondsSinceEpoch } from 'modules/home/helpers';
+import Input from 'modules/common/Input';
 
 function NewMessageInput(props) {
   const [newMessage, setNewMessage] = useState();
+  function handleNewMessage(message) {
+    setNewMessage(message);
+  }
+  const newMessageInputContext = {
+    name: null,
+    attributes: {
+      placeholder: 'Type Message Here',
+      value: newMessage,
+      onChange: handleNewMessage,
+    },
+  };
   return (
     <form
       onSubmit={(e) => {
@@ -12,13 +24,14 @@ function NewMessageInput(props) {
           timeStamp: getUtcSecondsSinceEpoch(),
         });
       }}>
-      <input
+      {/* <input
         placeholder='enter your message here'
         value={newMessage}
         onChange={(e) => {
           setNewMessage(e.target.value);
-        }}></input>
-      <input type='submit' />
+        }}></input> */}
+      <Input context={newMessageInputContext} />
+      <button type='submit' />
     </form>
   );
 }

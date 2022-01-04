@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Input from 'modules/common/Input';
 
 function Register(props) {
   const navigate = useNavigate();

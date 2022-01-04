@@ -1,51 +1,63 @@
-import React, { useReducer, useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import LogOutButton from 'modules/home/LogOutButton';
+import React from 'react';
+import axios from 'axios';
 import Rooms from 'modules/home/Rooms';
 import RoomsNavbar from 'modules/home/RoomsNavbar';
+import Button from 'modules/common/Button';
+import {
+  useMessagesManager,
+  useRooms,
+  useRoomUpdater,
+  useSocketIOSubscription,
+} from 'modules/home/helpers';
+import { useContextManager } from 'helpers';
 
 function Home() {
-  const [isLoggedIn, setIsLoggedIn, socket] = useOutletContext();
-  const [currentRoom, setCurrentRoom] = useState('default');
-  const [messages, dispatch] = useReducer(updateMessages, []);
-  function updateMessages(messages, action) {
-    switch (action.type) {
-      case 'CLEAR_MESSAGES':
-        return action.data;
-      case 'NEW_MESSAGE':
-        return [action.data, ...messages];
-      case 'ALL_MESSAGES':
-        return action.data;
-    }
-  }
-  useEffect(() => {
-    socket.on('message-from-server', (payload) => {
-      dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
-    });
-    return function cleanup() {
-      socket.off('message-from-server');
-    };
-  }, []);
+  const { setIsLoggedIn, socket } = useContextManager();
+  const [currentRoom, setCurrentRoom] = useRooms();
+  const [messages, dispatch] = useMessagesManager();
 
-  useEffect(() => {
-    dispatch({ type: 'CLEAR_MESSAGES', data: [] });
-    socket.emit('update-room', { roomName: currentRoom }, (payload) => {
-      console.log(payload);
-      socket.emit('load-all-messages', (payload) => {
-        dispatch({ type: 'ALL_MESSAGES', data: payload['db_messages'] });
-        console.log(payload);
-      });
-    });
-  }, [currentRoom]);
+  useSocketIOSubscription(socket, dispatch);
+  useRoomUpdater(socket, dispatch, currentRoom);
+
+  const LogoutButtonContext = {
+    text: 'Logout',
+    class: 'primaryButton logoutButton',
+    function: function Logout() {
+      setIsLoggedIn(false);
+      axios.post('../api/logout');
+    },
+  };
+ 
+  const RoomsNavBarContext = {
+    setCurrentRoom: setCurrentRoom,
+    socket: socket,
+    currentRoom: currentRoom,
+  };
+
+  const RoomsContext = {
+    messages: messages,
+    socket: socket,
+  };
 
   return (
     <div>
-      <LogOutButton />
-      <RoomsNavbar setCurrentRoom={setCurrentRoom} socket={socket} />
-      <h1>{currentRoom}</h1>
-      <Rooms messages={messages} name={currentRoom} socket={socket} />
+      <Button context={LogoutButtonContext} />
+      <RoomsNavbar context={RoomsNavBarContext} />
+      <Rooms context={RoomsContext} />
     </div>
   );
 }
 
 export default Home;
+
+function GenericForm() {
+  return (
+    <form>
+      <Input/>
+      <Input/>
+      <Input/>
+      <Input/>
+      <Button/>
+    </form>
+  )
+}

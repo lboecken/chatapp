@@ -19,7 +19,13 @@ function App() {
   return (
     <div className='App'>
       <h1>Chat App</h1>
-      <Outlet context={[isLoggedIn, setIsLoggedIn, socket]} />
+      <Outlet
+        context={{
+          isLoggedIn: isLoggedIn,
+          setIsLoggedIn: setIsLoggedIn,
+          socket: socket,
+        }}
+      />
     </div>
   );
 }

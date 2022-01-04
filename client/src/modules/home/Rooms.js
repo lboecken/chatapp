@@ -1,11 +1,12 @@
 import Messages from 'modules/home/Messages';
 import NewMessageInput from 'modules/home/NewMessageInput';
 
-function Rooms(props) {
+function Rooms({ context }) {
+  const { messages, socket } = context;
   return (
     <div>
-      <NewMessageInput socket={props.socket} />
-      <Messages messages={props.messages} />
+      <NewMessageInput socket={socket} />
+      <Messages messages={messages} />
     </div>
   );
 }

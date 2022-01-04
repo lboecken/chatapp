@@ -1,12 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useOutletContext,
-} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import App from './App';
 
@@ -14,6 +8,7 @@ import Home from 'modules/home/Home';
 import NoMatch from 'modules/nomatch/NoMatch';
 import Login from 'modules/login/Login';
 import Register from 'modules/register/Register';
+import { PublicRoute, PrivateRoute } from 'helpers';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -36,21 +31,3 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-function PublicRoute(props) {
-  const [isLoggedIn] = useOutletContext();
-  if (isLoggedIn && props.restricted) {
-    return <Navigate to='../' replace={true} />;
-  } else {
-    return props.element;
-  }
-}
-
-function PrivateRoute(props) {
-  const [isLoggedIn] = useOutletContext();
-  if (isLoggedIn) {
-    return props.element;
-  } else {
-    return <Navigate to='../login' replace={true} />;
-  }
-}

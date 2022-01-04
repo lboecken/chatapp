@@ -1,17 +1,14 @@
-import { useEffect, useState } from 'react';
-import { getPossibleRooms } from '../../helpers';
-function RoomsNavbar(props) {
-  const [possibleRooms, setPossibleRooms] = useState([]);
+import { useEffect } from 'react';
+import { getPossibleRooms } from 'modules/home/helpers';
+
+function RoomsNavbar({ context }) {
+  const { setCurrentRoom, socket, currentRoom } = context;
   const updateRoom = (e) => {
     e.preventDefault();
-    props.setCurrentRoom(e.target.value);
-    props.socket.emit(
-      'update-room',
-      { roomName: e.target.value },
-      (payload) => {
-        console.log(payload);
-      }
-    );
+    setCurrentRoom(e.target.value);
+    socket.emit('update-room', { roomName: e.target.value }, (payload) => {
+      console.log(payload);
+    });
   };
 
   useEffect(() => {
@@ -40,6 +37,7 @@ function RoomsNavbar(props) {
         }}>
         Get Rooms
       </button>
+      <h1>{currentRoom}</h1>
     </div>
   );
 }
