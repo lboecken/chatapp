@@ -8,11 +8,13 @@ export function useRooms() {
 
 export function useSocketIOSubscription(socket, dispatch) {
   useEffect(() => {
+    socket.connect();
     socket.on('message-from-server', (payload) => {
       dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
     });
     return function cleanup() {
       socket.off('message-from-server');
+      socket.disconnect();
     };
   }, []);
 }
@@ -21,10 +23,8 @@ export function useRoomUpdater(socket, dispatch, currentRoom) {
   useEffect(() => {
     dispatch({ type: 'CLEAR_MESSAGES', data: [] });
     socket.emit('update-room', { roomName: currentRoom }, (payload) => {
-      console.log(payload);
       socket.emit('load-all-messages', (payload) => {
         dispatch({ type: 'ALL_MESSAGES', data: payload['db_messages'] });
-        console.log(payload);
       });
     });
   }, [currentRoom]);
@@ -46,11 +46,20 @@ function updateMessages(messages, action) {
   }
 }
 
-export function getPossibleRooms() {
-  axios('./api/get-possible-rooms').then((response) => {
-    console.log(response['data']);
-    return response['data'];
-  });
+export async function useRoomsManager() {
+  const [currentRoom, setCurrentRoom] = useState('default');
+  const possibleRooms = await getPossibleRooms();
+
+  return {
+    proto_possibleRooms: possibleRooms['data'],
+    proto_currentRoom: currentRoom,
+    proto_setCurrentRoom: setCurrentRoom,
+  };
+}
+
+async function getPossibleRooms() {
+  const response = await axios.get('./api/get-possible-rooms');
+  return response;
 }
 
 export function getUtcSecondsSinceEpoch() {

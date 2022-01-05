@@ -1,41 +1,44 @@
-import { useEffect } from 'react';
-import { getPossibleRooms } from 'modules/home/helpers';
+import { useRoomsManager } from 'modules/home/helpers';
 
-function RoomsNavbar({ context }) {
-  const { setCurrentRoom, socket, currentRoom } = context;
-  const updateRoom = (e) => {
-    e.preventDefault();
-    setCurrentRoom(e.target.value);
-    socket.emit('update-room', { roomName: e.target.value }, (payload) => {
-      console.log(payload);
-    });
-  };
-
-  useEffect(() => {
-    console.log(getPossibleRooms());
-    // setPossibleRooms(availableRooms);
-  }, []);
-
+function updateRoom(newRoom, setCurrentRoom) {
+  setCurrentRoom(newRoom);
+}
+function RoomsNavbar({ setCurrentRoom, currentRoom }) {
+  const { proto_currentRoom, proto_possibleRooms, proto_setCurrentRoom } =
+    useRoomsManager();
   return (
     <div>
-      {/* {possibleRooms.map((room) => {
+      <hr />
+      <hr />
+      {/* {proto_possibleRooms.map((room) => {
         return <h2>{room}</h2>;
       })} */}
-      <button onClick={(e) => updateRoom(e)} value='default'>
+      {/* problem is that possible_rooms needs to be an array else it cannot be mapped out.  */}
+      <hr />
+      <hr />
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          updateRoom(e.target.value, setCurrentRoom);
+        }}
+        value='default'>
         Default
-      </button>
-      <button onClick={(e) => updateRoom(e)} value='channel1'>
-        Channel 1
-      </button>
-      <button onClick={(e) => updateRoom(e)} value='channel2'>
-        Channel 2
       </button>
       <button
         onClick={(e) => {
           e.preventDefault();
-          getPossibleRooms();
-        }}>
-        Get Rooms
+          updateRoom(e.target.value, setCurrentRoom);
+        }}
+        value='channel1'>
+        Channel 1
+      </button>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          updateRoom(e.target.value, setCurrentRoom);
+        }}
+        value='channel2'>
+        Channel 2
       </button>
       <h1>{currentRoom}</h1>
     </div>

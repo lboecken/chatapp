@@ -1,9 +1,10 @@
 import React from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useContextManager } from 'helpers';
 
-function Login(props) {
-  const { setIsLoggedIn } = useOutletContext();
+function Login() {
+  const { setIsLoggedIn } = useContextManager();
   const navigate = useNavigate();
   const loginUser = (data) => {
     axios.post('../api/login', data).then((response) => {

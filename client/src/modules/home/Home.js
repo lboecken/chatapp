@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import Rooms from 'modules/home/Rooms';
 import RoomsNavbar from 'modules/home/RoomsNavbar';
+import Messages from 'modules/home/Messages';
+import NewMessageForm from 'modules/home/NewMessageForm';
 import Button from 'modules/common/Button';
 import {
   useMessagesManager,
@@ -21,29 +22,22 @@ function Home() {
 
   const LogoutButtonContext = {
     text: 'Logout',
-    class: 'primaryButton logoutButton',
-    function: function Logout() {
-      setIsLoggedIn(false);
-      axios.post('../api/logout');
+    attributes: {
+      class: 'primaryButton logoutButton',
+      onClick: function Logout() {
+        setIsLoggedIn(false);
+        axios.post('../api/logout');
+        console.log('log out ran');
+      },
     },
-  };
- 
-  const RoomsNavBarContext = {
-    setCurrentRoom: setCurrentRoom,
-    socket: socket,
-    currentRoom: currentRoom,
-  };
-
-  const RoomsContext = {
-    messages: messages,
-    socket: socket,
   };
 
   return (
     <div>
       <Button context={LogoutButtonContext} />
-      <RoomsNavbar context={RoomsNavBarContext} />
-      <Rooms context={RoomsContext} />
+      <RoomsNavbar currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
+      <NewMessageForm socket={socket} />
+      <Messages messages={messages} />
     </div>
   );
 }
@@ -53,11 +47,11 @@ export default Home;
 function GenericForm() {
   return (
     <form>
-      <Input/>
-      <Input/>
-      <Input/>
-      <Input/>
-      <Button/>
+      <Input />
+      <Input />
+      <Input />
+      <Input />
+      <Button />
     </form>
-  )
+  );
 }

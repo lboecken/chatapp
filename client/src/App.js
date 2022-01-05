@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import './App.css';
 import axios from 'axios';
-const { io } = require('socket.io-client');
-const socket = io();
+import { io } from 'socket.io-client';
+const socket = io({ autoConnect: false });
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function validatePreviousSession(setIsLoggedIn) {
   const navigate = useNavigate();
   useEffect(() => {
     axios.post('../api/validate-previous-session').then((response) => {
@@ -16,6 +15,11 @@ function App() {
       }
     });
   }, []);
+}
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  validatePreviousSession(setIsLoggedIn);
   return (
     <div className='App'>
       <h1>Chat App</h1>

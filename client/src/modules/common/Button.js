@@ -1,16 +1,5 @@
 function Button({ context }) {
-  return (
-    <div>
-      <button
-        className={context.class}
-        onClick={(e) => {
-          e.preventDefault();
-          context.function();
-        }}>
-        {context.text}
-      </button>
-    </div>
-  );
+  return <button {...context.attributes}>{context.text}</button>;
 }
 
 export default Button;

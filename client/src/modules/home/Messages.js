@@ -1,7 +1,7 @@
-function Messages(props) {
+function Messages({messages}) {
   return (
     <ul>
-      {props.messages.map((message) => {
+      {messages.map((message) => {
         return (
           <li>
             <h4>{message.userID}</h4>
