@@ -1,9 +1,9 @@
-function Messages({messages}) {
+function Messages({ messages }) {
   return (
     <ul>
       {messages.map((message) => {
         return (
-          <li>
+          <li key={message.timestamp + '_' + Math.random()}>
             <h4>{message.userID}</h4>
             {message.message}
             <hr />

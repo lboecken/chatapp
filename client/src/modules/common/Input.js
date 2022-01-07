@@ -1,8 +1,8 @@
-function Input({ context }) {
+function Input({ label, attributes }) {
   return (
     <label>
-      {context.name && context.name}
-      <input {...context.attributes} />
+      {label && label}
+      <input {...attributes} />
     </label>
   );
 }

@@ -1,38 +1,11 @@
 import { useEffect, useReducer, useState } from 'react';
 import axios from 'axios';
 
-export function useRooms() {
-  const [currentRoom, setCurrentRoom] = useState('default');
-  return [currentRoom, setCurrentRoom];
-}
-
-export function useSocketIOSubscription(socket, dispatch) {
-  useEffect(() => {
-    socket.connect();
-    socket.on('message-from-server', (payload) => {
-      dispatch({ type: 'NEW_MESSAGE', data: payload['db_message'] });
-    });
-    return function cleanup() {
-      socket.off('message-from-server');
-      socket.disconnect();
-    };
-  }, []);
-}
-
-export function useRoomUpdater(socket, dispatch, currentRoom) {
-  useEffect(() => {
-    dispatch({ type: 'CLEAR_MESSAGES', data: [] });
-    socket.emit('update-room', { roomName: currentRoom }, (payload) => {
-      socket.emit('load-all-messages', (payload) => {
-        dispatch({ type: 'ALL_MESSAGES', data: payload['db_messages'] });
-      });
-    });
-  }, [currentRoom]);
-}
-
-export function useMessagesManager() {
-  const [messages, dispatch] = useReducer(updateMessages, []);
-  return [messages, dispatch];
+// Messages state management
+export function useMessages() {
+  const [newMessage, setNewMessage] = useState();
+  const [allMessages, dispatchMessages] = useReducer(updateMessages, []);
+  return [allMessages, dispatchMessages, newMessage, setNewMessage];
 }
 
 function updateMessages(messages, action) {
@@ -46,20 +19,50 @@ function updateMessages(messages, action) {
   }
 }
 
-export async function useRoomsManager() {
-  const [currentRoom, setCurrentRoom] = useState('default');
-  const possibleRooms = await getPossibleRooms();
+// Room state management
+export function useRooms(dispatchMessages, socket) {
+  const [availableRooms, setPossibleRooms] = useState([]);
+  usePossibleRooms(setPossibleRooms);
+  const [currentRoom, setCurrentRoom] = useState('HTML');
+  useCurrentRoom(dispatchMessages, socket, currentRoom);
+  return [currentRoom, setCurrentRoom, availableRooms];
+}
 
-  return {
-    proto_possibleRooms: possibleRooms['data'],
-    proto_currentRoom: currentRoom,
-    proto_setCurrentRoom: setCurrentRoom,
-  };
+function usePossibleRooms(setPossibleRooms) {
+  useEffect(async () => {
+    setPossibleRooms(await getPossibleRooms());
+  }, []);
+}
+
+function useCurrentRoom(dispatchMessages, socket, currentRoom) {
+  useEffect(() => {
+    dispatchMessages({ type: 'CLEAR_MESSAGES', data: [] });
+    socket.emit('update-room', { roomName: currentRoom }, (payload) => {
+      socket.emit('load-all-messages', (payload) => {
+        dispatchMessages({
+          type: 'ALL_MESSAGES',
+          data: payload['db_messages'],
+        });
+      });
+    });
+  }, [currentRoom]);
 }
 
 async function getPossibleRooms() {
   const response = await axios.get('./api/get-possible-rooms');
-  return response;
+  return response['data'];
 }
 
-
+// SocketIO state management
+export function useSocketIOSubscription(dispatchMessages, socket) {
+  useEffect(() => {
+    socket.connect();
+    socket.on('message-from-server', (payload) => {
+      dispatchMessages({ type: 'NEW_MESSAGE', data: payload['db_message'] });
+    });
+    return function cleanup() {
+      socket.off('message-from-server');
+      socket.disconnect();
+    };
+  }, []);
+}

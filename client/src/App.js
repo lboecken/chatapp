@@ -1,25 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import { useRedirector } from 'modules/common/utilities';
 import './App.css';
+import io from 'socket.io-client';
 import axios from 'axios';
-import { io } from 'socket.io-client';
+
 const socket = io({ autoConnect: false });
 
-function validatePreviousSession(setIsLoggedIn) {
-  const navigate = useNavigate();
+function useLoginManager() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  return [isLoggedIn, setIsLoggedIn];
+}
+
+function useSessionValidator(setIsLoggedIn) {
+  const redirect = useRedirector();
   useEffect(() => {
     axios.post('../api/validate-previous-session').then((response) => {
       if (response['data'] == 'valid') {
         setIsLoggedIn(true);
-        navigate('../', { replace: true });
+        redirect('../', { replace: true });
       }
     });
   }, []);
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  validatePreviousSession(setIsLoggedIn);
+  const [isLoggedIn, setIsLoggedIn] = useLoginManager();
+  useSessionValidator(setIsLoggedIn);
   return (
     <div className='App'>
       <h1>Chat App</h1>

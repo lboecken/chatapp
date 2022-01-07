@@ -1,57 +1,51 @@
-import React from 'react';
 import axios from 'axios';
 import RoomsNavbar from 'modules/home/RoomsNavbar';
 import Messages from 'modules/home/Messages';
 import NewMessageForm from 'modules/home/NewMessageForm';
 import Button from 'modules/common/Button';
+import { useContextManager } from 'modules/common/utilities';
 import {
-  useMessagesManager,
+  useMessages,
   useRooms,
-  useRoomUpdater,
   useSocketIOSubscription,
 } from 'modules/home/helpers';
-import { useContextManager } from 'helpers';
 
 function Home() {
   const { setIsLoggedIn, socket } = useContextManager();
-  const [currentRoom, setCurrentRoom] = useRooms();
-  const [messages, dispatch] = useMessagesManager();
+  const [allMessages, dispatchMessages, newMessage, setNewMessage] = useMessages();
+  const [currentRoom, setCurrentRoom, availableRooms] = useRooms(
+    dispatchMessages,
+    socket
+  );
 
-  useSocketIOSubscription(socket, dispatch);
-  useRoomUpdater(socket, dispatch, currentRoom);
-
-  const LogoutButtonContext = {
-    text: 'Logout',
-    attributes: {
-      class: 'primaryButton logoutButton',
-      onClick: function Logout() {
-        setIsLoggedIn(false);
-        axios.post('../api/logout');
-        console.log('log out ran');
-      },
-    },
-  };
+  useSocketIOSubscription(dispatchMessages, socket);
 
   return (
     <div>
-      <Button context={LogoutButtonContext} />
-      <RoomsNavbar currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} />
-      <NewMessageForm socket={socket} />
-      <Messages messages={messages} />
+      <Button
+        attributes={{
+          class: 'primaryButton logoutButton',
+          onClick: function Logout() {
+            setIsLoggedIn(false);
+            axios.post('../api/logout');
+            console.log('log out ran');
+          },
+        }}
+        text='Logout'
+      />
+      <RoomsNavbar
+        currentRoom={currentRoom}
+        setCurrentRoom={setCurrentRoom}
+        possibleRooms={availableRooms['data']}
+      />
+      <NewMessageForm
+        socket={socket}
+        setNewMessage={setNewMessage}
+        newMessage={newMessage}
+      />
+      <Messages messages={allMessages} />
     </div>
   );
 }
 
 export default Home;
-
-function GenericForm() {
-  return (
-    <form>
-      <Input />
-      <Input />
-      <Input />
-      <Input />
-      <Button />
-    </form>
-  );
-}

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Button from 'modules/common/Button';
 import Input from 'modules/common/Input';
 
@@ -7,7 +6,6 @@ function sendMessageToServer(socket, newMessage) {
     message: newMessage,
     timeStamp: getUtcSecondsSinceEpoch(),
   });
-  return true;
 }
 
 function getUtcSecondsSinceEpoch() {
@@ -17,9 +15,7 @@ function getUtcSecondsSinceEpoch() {
   return utcSecondsSinceEpoch;
 }
 
-function NewMessageForm({ socket }) {
-  const [newMessage, setNewMessage] = useState();
-
+function NewMessageForm({ socket, newMessage, setNewMessage }) {
   return (
     <form
       onSubmit={(e) => {
@@ -27,17 +23,13 @@ function NewMessageForm({ socket }) {
         sendMessageToServer(socket, newMessage);
       }}>
       <Input
-        context={{
-          attributes: {
-            placeholder: 'enter your message here',
-            value: newMessage,
-            onChange: (e) => {
-              setNewMessage(e.target.value);
-            },
-          },
+        attributes={{
+          placeholder: 'enter your message here',
+          value: newMessage,
+          onChange: (e) => setNewMessage(e.target.value),
         }}
       />
-      <Button context={{ text: 'Submit' }} />
+      <Button text='Submit' />
     </form>
   );
 }

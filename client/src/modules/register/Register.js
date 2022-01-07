@@ -1,23 +1,24 @@
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useRedirector } from 'modules/common/utilities';
+import Button from 'modules/common/Button';
 import Input from 'modules/common/Input';
+import axios from 'axios';
 
-function Register(props) {
-  const navigate = useNavigate();
-  const registerNewUser = (formUsername, formPassword) => {
-    console.log(formUsername, formPassword);
-    axios
-      .post('../api/register', {
-        username: formUsername,
-        password: formPassword,
-      })
-      .then((response) => {
-        console.log(response);
-        alert('you registered successfully');
-        navigate('../login', { replace: true });
-      });
-  };
+export function registerNewUser(formUsername, formPassword, redirect) {
+  console.log(formUsername, formPassword);
+  axios
+    .post('../api/register', {
+      username: formUsername,
+      password: formPassword,
+    })
+    .then((response) => {
+      console.log(response);
+      alert('you registered successfully');
+      redirect('../login', { replace: true });
+    });
+}
 
+function Register() {
+  const redirect = useRedirector();
   return (
     <div>
       <form
@@ -25,15 +26,18 @@ function Register(props) {
           e.preventDefault();
           const username = e.target.username.value;
           const password = e.target.password.value;
-          registerNewUser(username, password);
+          registerNewUser(username, password, redirect);
         }}>
-        <label>Username</label>
-        <input type='text' placeholder='name' name='username' />
-        <label>Password</label>
-        <input type='text' placeholder='Password' name='password' />
-        <label>Confirm Password</label>
-        <input type='text' placeholder='Confirm Password' />
-        <button type='submit'>Submit</button>
+        <Input
+          label='Username'
+          attributes={{ type: 'text', name: 'username' }}
+        />
+        <Input
+          label='Password'
+          attributes={{ type: 'text', name: 'password' }}
+        />
+        <Input label='Confirm Password' attributes={{ type: 'text' }} />
+        <Button attributes={{ type: 'submit' }} text='Register' />
       </form>
     </div>
   );

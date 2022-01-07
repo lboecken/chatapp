@@ -1,5 +1,5 @@
-function Button({ context }) {
-  return <button {...context.attributes}>{context.text}</button>;
+function Button({ attributes, text }) {
+  return <button {...attributes}>{text}</button>;
 }
 
 export default Button;
