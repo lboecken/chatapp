@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { getUtcSecondsSinceEpoch } from 'modules/home/helpers';
 import Button from 'modules/common/Button';
 import Input from 'modules/common/Input';
-import { useContextManager } from 'helpers';
 
 function sendMessageToServer(socket, newMessage) {
   socket.emit('new-message', {
@@ -11,6 +9,14 @@ function sendMessageToServer(socket, newMessage) {
   });
   return true;
 }
+
+function getUtcSecondsSinceEpoch() {
+  const now = new Date();
+  const utcMilllisecondsSinceEpoch = now.getTime();
+  const utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000);
+  return utcSecondsSinceEpoch;
+}
+
 function NewMessageForm({ socket }) {
   const [newMessage, setNewMessage] = useState();
 
