@@ -3,7 +3,7 @@ import Button from 'modules/common/Button';
 import Input from 'modules/common/Input';
 import axios from 'axios';
 
-export function registerNewUser(formUsername, formPassword, redirect) {
+function registerNewUser(formUsername, formPassword, redirect) {
   console.log(formUsername, formPassword);
   axios
     .post('../api/register', {
@@ -13,8 +13,14 @@ export function registerNewUser(formUsername, formPassword, redirect) {
     .then((response) => {
       console.log(response);
       alert('you registered successfully');
-      redirect('../login', { replace: true });
     });
+}
+
+function doPasswordsMatch(password1, password2) {
+  if (password1 === password2) {
+    return true;
+  }
+  return false;
 }
 
 function Register() {
@@ -26,7 +32,13 @@ function Register() {
           e.preventDefault();
           const username = e.target.username.value;
           const password = e.target.password.value;
-          registerNewUser(username, password, redirect);
+          const confirmedPassword = e.target.confirmPassword.value;
+          if (doPasswordsMatch(password, confirmedPassword)) {
+            registerNewUser(username, password, redirect);
+            redirect('../login', { replace: true });
+          } else {
+            alert('The passwords do not match');
+          }
         }}>
         <Input
           label='Username'
@@ -36,7 +48,10 @@ function Register() {
           label='Password'
           attributes={{ type: 'text', name: 'password' }}
         />
-        <Input label='Confirm Password' attributes={{ type: 'text' }} />
+        <Input
+          label='Confirm Password'
+          attributes={{ type: 'text', name: 'confirmPassword' }}
+        />
         <Button attributes={{ type: 'submit' }} text='Register' />
       </form>
     </div>
