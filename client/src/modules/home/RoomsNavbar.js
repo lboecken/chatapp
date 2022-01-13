@@ -17,7 +17,6 @@ function RoomsNavbar({ setCurrentRoom, currentRoom, possibleRooms }) {
             />
           );
         })}
-      <h1>{currentRoom}</h1>
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import Button from 'modules/common/Button';
-import Input from 'modules/common/Input';
+import 'modules/home/NewMessageForm.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 function sendMessageToServer(socket, newMessage) {
   socket.emit('new-message', {
@@ -17,20 +18,22 @@ function getUtcSecondsSinceEpoch() {
 
 function NewMessageForm({ socket, newMessage, setNewMessage }) {
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        sendMessageToServer(socket, newMessage);
-      }}>
-      <Input
-        attributes={{
-          placeholder: 'enter your message here',
-          value: newMessage,
-          onChange: (e) => setNewMessage(e.target.value),
-        }}
-      />
-      <Button text='Submit' />
-    </form>
+    <div className='NewMessageForm'>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendMessageToServer(socket, newMessage);
+        }}>
+        <input
+          placeholder='enter your message here'
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+        />
+        <button>
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>
+      </form>
+    </div>
   );
 }
 

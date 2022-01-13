@@ -1,0 +1,18 @@
+.MessagesContainer {
+  max-height: fit-content;
+  overflow: hidden;
+}
+.Messages {
+  /* display: flex;
+  flex-direction: column-reverse; */
+}
+.otherMessage {
+  margin: 1rem 0.5rem;
+  text-align: left;
+}
+
+.selfMessage {
+  margin: 1rem 0.5rem;
+
+  text-align: right;
+}

@@ -1,8 +1,8 @@
 import { useRedirector, useContextManager } from 'modules/common/utilities';
 import axios from 'axios';
 import Button from 'modules/common/Button';
-import Input from 'modules/common/Input';
-
+import FormInput from 'modules/common/FormInput';
+import 'modules/login/Login.css';
 function loginUser(data, redirect, setIsLoggedIn) {
   axios.post('../api/login', data).then((response) => {
     if (response.data !== 'logged in ') {
@@ -21,6 +21,7 @@ function Login() {
   return (
     <div>
       <form
+        className='LoginForm'
         onSubmit={(e) => {
           e.preventDefault();
           const data = {
@@ -30,22 +31,26 @@ function Login() {
           };
           loginUser(data, redirect, setIsLoggedIn);
         }}>
-        <Input
+        <FormInput
           label='Username:'
-          attributes={{ type: 'text', name: 'username' }}
+          labelAttributes={{ className: 'loginInput' }}
+          inputAttributes={{ type: 'text', name: 'username' }}
         />
-        <Input
+        <FormInput
           label='Password:'
-          attributes={{ type: 'password', name: 'password' }}
+          labelAttributes={{ className: 'loginInput' }}
+          inputAttributes={{ type: 'password', name: 'password' }}
         />
-        <Input
+        <FormInput
           label='Remember Me'
-          attributes={{ type: 'checkbox', name: 'remember' }}
+          labelAttributes={{ className: 'loginInput' }}
+          inputAttributes={{ type: 'checkbox', name: 'remember' }}
         />
-        <Button text='Login' />
+        <Button text='Login' attributes={{ className: 'primaryButton' }} />
         <Button
           text='Register'
           attributes={{
+            className: 'primaryButton',
             onClick: () => redirect('../register', { replace: true }),
           }}
         />

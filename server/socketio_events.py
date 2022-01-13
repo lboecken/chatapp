@@ -24,7 +24,7 @@ def handle_new_message(payload):
     new_message = {
         'message': payload['message'],
         'timeStamp': payload['timeStamp'],
-        'userID': user.username
+        'userName': user.username
     }
     emit('message-from-server', {
          "db_message": new_message}, broadcast=True, include_self=True, to=session.get('room'))
@@ -45,7 +45,7 @@ def handle_load_all_messages():
         Messages.room_id == session.get('room')).all()
     for entry in query:
         updated_entry = {'message': entry.message,
-                         'timeStamp': entry.timestamp_utc,
-                         'userID': entry.user.username}
+                         'timestamp': entry.timestamp_utc,
+                         'userName': entry.user.username}
         db_messages.insert(0, updated_entry)
     return {'db_messages': db_messages}

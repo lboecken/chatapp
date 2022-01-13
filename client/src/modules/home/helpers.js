@@ -16,6 +16,7 @@ function updateMessages(messages, action) {
       return [action.data, ...messages];
     case 'ALL_MESSAGES':
       return action.data;
+    default:
   }
 }
 
@@ -29,9 +30,12 @@ export function useRooms(dispatchMessages, socket) {
 }
 
 function usePossibleRooms(setPossibleRooms) {
-  useEffect(async () => {
-    setPossibleRooms(await getPossibleRooms());
-  }, []);
+  useEffect(() => {
+    async function fetchRooms() {
+      setPossibleRooms(await getPossibleRooms());
+    }
+    fetchRooms();
+  }, [setPossibleRooms]);
 }
 
 function useCurrentRoom(dispatchMessages, socket, currentRoom) {
@@ -45,7 +49,7 @@ function useCurrentRoom(dispatchMessages, socket, currentRoom) {
         });
       });
     });
-  }, [currentRoom]);
+  }, [currentRoom, dispatchMessages, socket]);
 }
 
 async function getPossibleRooms() {
@@ -64,5 +68,5 @@ export function useSocketIOSubscription(dispatchMessages, socket) {
       socket.off('message-from-server');
       socket.disconnect();
     };
-  }, []);
+  }, [dispatchMessages, socket]);
 }

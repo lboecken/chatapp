@@ -9,10 +9,12 @@ import {
   useRooms,
   useSocketIOSubscription,
 } from 'modules/home/helpers';
+import 'modules/home/Home.css';
 
 function Home() {
   const { setIsLoggedIn, socket } = useContextManager();
-  const [allMessages, dispatchMessages, newMessage, setNewMessage] = useMessages();
+  const [allMessages, dispatchMessages, newMessage, setNewMessage] =
+    useMessages();
   const [currentRoom, setCurrentRoom, availableRooms] = useRooms(
     dispatchMessages,
     socket
@@ -21,10 +23,10 @@ function Home() {
   useSocketIOSubscription(dispatchMessages, socket);
 
   return (
-    <div>
+    <div className='Home'>
       <Button
         attributes={{
-          class: 'primaryButton logoutButton',
+          className: 'primaryButton logoutButton',
           onClick: function Logout() {
             setIsLoggedIn(false);
             axios.post('../api/logout');
@@ -38,12 +40,12 @@ function Home() {
         setCurrentRoom={setCurrentRoom}
         possibleRooms={availableRooms['data']}
       />
+      <Messages messages={allMessages} />
       <NewMessageForm
         socket={socket}
         setNewMessage={setNewMessage}
         newMessage={newMessage}
       />
-      <Messages messages={allMessages} />
     </div>
   );
 }

@@ -9,32 +9,34 @@ const socket = io({ autoConnect: false });
 
 function useLoginManager() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  return [isLoggedIn, setIsLoggedIn];
+  const [userName, setUserName] = useState();
+  return [isLoggedIn, setIsLoggedIn, userName, setUserName];
 }
 
-function useSessionValidator(setIsLoggedIn) {
+function useSessionValidator(setIsLoggedIn, setUserName) {
   const redirect = useRedirector();
   useEffect(() => {
     axios.post('../api/validate-previous-session').then((response) => {
-      if (response['data'] == 'valid') {
+      if (response['data']['status'] === 'valid') {
         setIsLoggedIn(true);
+        setUserName(response['data']['userName']);
         redirect('../', { replace: true });
       }
     });
-  }, []);
+  }, [setIsLoggedIn, redirect]);
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useLoginManager();
-  useSessionValidator(setIsLoggedIn);
+  const [isLoggedIn, setIsLoggedIn, userName, setUserName] = useLoginManager();
+  useSessionValidator(setIsLoggedIn, setUserName);
   return (
     <div className='App'>
-      <h1>Chat App</h1>
       <Outlet
         context={{
           isLoggedIn: isLoggedIn,
           setIsLoggedIn: setIsLoggedIn,
           socket: socket,
+          userName: userName,
         }}
       />
     </div>

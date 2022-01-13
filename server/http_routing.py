@@ -1,6 +1,7 @@
 from passlib.hash import sha256_crypt
 from flask import request, send_from_directory
 from flask_login import login_user, current_user, logout_user
+from sqlalchemy.orm import query
 from server import app, db
 from server.sql_models import Rooms, Users
 
@@ -44,8 +45,10 @@ def login():
 @app.route('/api/validate-previous-session', methods=['POST'])
 def validate_previous_session():
     if current_user.is_authenticated:
-        return 'valid'
-    return 'invalid'
+        print(dir(current_user))
+        return {'status': 'valid',
+                'userName': get_username_from_db()}
+    return {'status': 'invalid'}
 
 
 @app.route('/api/logout', methods=['POST'])
@@ -61,3 +64,8 @@ def get_possible_rooms():
     for room in rooms:
         possible_rooms.append(room.name)
     return {'data': possible_rooms}
+
+
+def get_username_from_db():
+    user = Users.query.filter_by(id=current_user.id).first()
+    return user.username

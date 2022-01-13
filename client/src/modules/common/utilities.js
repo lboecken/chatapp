@@ -6,10 +6,11 @@ export function useRedirector() {
 }
 
 export function useContextManager() {
-  const { isLoggedIn, setIsLoggedIn, socket } = useOutletContext();
+  const { isLoggedIn, setIsLoggedIn, socket, userName } = useOutletContext();
   return {
     isLoggedIn: isLoggedIn,
     setIsLoggedIn: setIsLoggedIn,
     socket: socket,
+    userName: userName,
   };
 }

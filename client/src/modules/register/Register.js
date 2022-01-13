@@ -1,7 +1,8 @@
 import { useRedirector } from 'modules/common/utilities';
 import Button from 'modules/common/Button';
-import Input from 'modules/common/Input';
+import FormInput from 'modules/common/FormInput';
 import axios from 'axios';
+import 'modules/register/Register.css';
 
 function registerNewUser(formUsername, formPassword, redirect) {
   console.log(formUsername, formPassword);
@@ -28,6 +29,7 @@ function Register() {
   return (
     <div>
       <form
+        className='RegisterForm'
         onSubmit={(e) => {
           e.preventDefault();
           const username = e.target.username.value;
@@ -40,17 +42,20 @@ function Register() {
             alert('The passwords do not match');
           }
         }}>
-        <Input
+        <FormInput
           label='Username'
-          attributes={{ type: 'text', name: 'username' }}
+          labelAttributes={{ className: 'registerFormLabel' }}
+          inputAttributes={{ type: 'text', name: 'username' }}
         />
-        <Input
+        <FormInput
           label='Password'
-          attributes={{ type: 'text', name: 'password' }}
+          labelAttributes={{ className: 'registerFormLabel' }}
+          inputAttributes={{ type: 'text', name: 'password' }}
         />
-        <Input
+        <FormInput
           label='Confirm Password'
-          attributes={{ type: 'text', name: 'confirmPassword' }}
+          labelAttributes={{ className: 'registerFormLabel' }}
+          inputAttributes={{ type: 'text', name: 'confirmPassword' }}
         />
         <Button attributes={{ type: 'submit' }} text='Register' />
       </form>
