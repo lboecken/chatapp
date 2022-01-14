@@ -1,10 +1,49 @@
+/** @jsxImportSource @emotion/react */
 import { useRedirector } from 'modules/common/utilities';
-import Button from 'modules/common/Button';
-import FormInput from 'modules/common/FormInput';
 import axios from 'axios';
-import 'modules/register/Register.css';
+import { css } from '@emotion/react';
 
-function registerNewUser(formUsername, formPassword, redirect) {
+function Register() {
+  const redirect = useRedirector();
+  return (
+    <div css={formWrapper}>
+      <form
+        css={form}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const username = e.target.username.value;
+          const password = e.target.password.value;
+          const confirmedPassword = e.target.confirmPassword.value;
+          if (doPasswordsMatch(password, confirmedPassword)) {
+            registerNewUser(username, password);
+            redirect('../login', { replace: true });
+          } else {
+            alert('The passwords do not match');
+          }
+        }}>
+        <div css={inputWrapper}>
+          <label css={inputLabel}>
+            Username
+            <input css={input} type='text' name='username' />
+          </label>
+          <label css={inputLabel}>
+            Password
+            <input css={input} type='password' name='password' />
+          </label>
+          <label css={inputLabel}>
+            Confirm Password
+            <input css={input} type='password' name='confirmPassword' />
+          </label>
+        </div>
+        <button css={primaryButton}>Register Account</button>
+      </form>
+    </div>
+  );
+}
+
+export default Register;
+
+function registerNewUser(formUsername, formPassword) {
   console.log(formUsername, formPassword);
   axios
     .post('../api/register', {
@@ -24,43 +63,55 @@ function doPasswordsMatch(password1, password2) {
   return false;
 }
 
-function Register() {
-  const redirect = useRedirector();
-  return (
-    <div>
-      <form
-        className='RegisterForm'
-        onSubmit={(e) => {
-          e.preventDefault();
-          const username = e.target.username.value;
-          const password = e.target.password.value;
-          const confirmedPassword = e.target.confirmPassword.value;
-          if (doPasswordsMatch(password, confirmedPassword)) {
-            registerNewUser(username, password, redirect);
-            redirect('../login', { replace: true });
-          } else {
-            alert('The passwords do not match');
-          }
-        }}>
-        <FormInput
-          label='Username'
-          labelAttributes={{ className: 'registerFormLabel' }}
-          inputAttributes={{ type: 'text', name: 'username' }}
-        />
-        <FormInput
-          label='Password'
-          labelAttributes={{ className: 'registerFormLabel' }}
-          inputAttributes={{ type: 'text', name: 'password' }}
-        />
-        <FormInput
-          label='Confirm Password'
-          labelAttributes={{ className: 'registerFormLabel' }}
-          inputAttributes={{ type: 'text', name: 'confirmPassword' }}
-        />
-        <Button attributes={{ type: 'submit' }} text='Register' />
-      </form>
-    </div>
-  );
-}
+const formWrapper = css`
+  background: white;
+  margin: auto;
+  padding: 1rem;
+  width: 40%;
+  border-radius: 100px;
+`;
 
-export default Register;
+const form = css`
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  gap: 1rem;
+  width: 60%;
+  margin: auto;
+`;
+
+const inputWrapper = css`
+  background: hsl(224, 23%, 55%);
+  width: 100%;
+  padding: 1rem 0;
+  border-radius: 25px;
+`;
+
+const inputLabel = css`
+  display: block;
+  margin: 1ch auto;
+  width: 80%;
+`;
+
+const input = css`
+  display: block;
+  margin: auto;
+  padding: 0;
+  width: 80%;
+`;
+
+const primaryButton = css`
+  margin: auto;
+  width: 100%;
+  height: 50px;
+  background: hsl(223, 47%, 23%);
+  color: #fff;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 1rem;
+  border: none;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;

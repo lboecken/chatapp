@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import './index.css';
 import { useContextManager } from 'modules/common/utilities';
 import App from './App';
 import Home from 'modules/home/Home';

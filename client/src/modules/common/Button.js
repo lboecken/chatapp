@@ -1,5 +1,3 @@
-import './Button.css';
-
 function Button({ attributes, text }) {
   return <button {...attributes}>{text}</button>;
 }

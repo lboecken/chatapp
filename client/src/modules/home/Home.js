@@ -1,15 +1,13 @@
-import axios from 'axios';
-import RoomsNavbar from 'modules/home/RoomsNavbar';
+
+import Navbar from 'modules/home/RoomsNavbar';
 import Messages from 'modules/home/Messages';
 import NewMessageForm from 'modules/home/NewMessageForm';
-import Button from 'modules/common/Button';
 import { useContextManager } from 'modules/common/utilities';
 import {
   useMessages,
   useRooms,
   useSocketIOSubscription,
 } from 'modules/home/helpers';
-import 'modules/home/Home.css';
 
 function Home() {
   const { setIsLoggedIn, socket } = useContextManager();
@@ -24,19 +22,9 @@ function Home() {
 
   return (
     <div className='Home'>
-      <Button
-        attributes={{
-          className: 'primaryButton logoutButton',
-          onClick: function Logout() {
-            setIsLoggedIn(false);
-            axios.post('../api/logout');
-            console.log('log out ran');
-          },
-        }}
-        text='Logout'
-      />
-      <RoomsNavbar
+      <Navbar
         currentRoom={currentRoom}
+        setIsLoggedIn={setIsLoggedIn}
         setCurrentRoom={setCurrentRoom}
         possibleRooms={availableRooms['data']}
       />

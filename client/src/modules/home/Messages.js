@@ -1,5 +1,4 @@
 import { useContextManager } from 'modules/common/utilities';
-import 'modules/home/Messages.css';
 
 function Messages({ messages }) {
   const { userName } = useContextManager();

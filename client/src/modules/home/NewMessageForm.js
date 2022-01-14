@@ -1,4 +1,3 @@
-import 'modules/home/NewMessageForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
