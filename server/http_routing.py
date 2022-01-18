@@ -45,7 +45,6 @@ def login():
 @app.route('/api/validate-previous-session', methods=['POST'])
 def validate_previous_session():
     if current_user.is_authenticated:
-        print(dir(current_user))
         return {'status': 'valid',
                 'userName': get_username_from_db()}
     return {'status': 'invalid'}

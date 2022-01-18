@@ -44,7 +44,6 @@ def handle_load_all_messages():
     query = db.session.query(Messages).filter(
         Messages.room_id == session.get('room')).all()
     for entry in query:
-        print(entry.id)
         updated_entry = {'message': entry.message,
                          'timestamp': entry.timestamp_utc,
                          'id': entry.id,
