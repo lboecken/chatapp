@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import Navbar from 'modules/home/Navbar';
 import Messages from 'modules/home/Messages';
+import CurrentRoom from 'modules/home/CurrentRoom';
 import { useContextManager } from 'modules/common/utilities';
 import {
   useMessages,
@@ -28,6 +29,7 @@ function Home() {
         setCurrentRoom={setCurrentRoom}
         possibleRooms={availableRooms['data']}
       />
+      <CurrentRoom currentRoom={currentRoom} />
       <Messages
         messages={allMessages}
         socket={socket}
