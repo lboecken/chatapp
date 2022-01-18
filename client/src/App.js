@@ -1,41 +1,28 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
-import { useRedirector } from 'modules/common/utilities';
-import io from 'socket.io-client';
+import { css, Global } from '@emotion/react';
 import axios from 'axios';
-import { Global, css } from '@emotion/react';
-import Logo from 'modules/icons/code-break.svg';
+import Header from 'modules/common/Header';
+import { useRedirector } from 'modules/common/utilities';
+import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import io from 'socket.io-client';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn, userName, setUserName] = useLoginManager();
   useSessionValidator(setIsLoggedIn, setUserName);
+  const appContext = {
+    isLoggedIn: isLoggedIn,
+    setIsLoggedIn: setIsLoggedIn,
+    socket: socket,
+    userName: userName,
+  };
   return (
     <div>
-      <Global
-        styles={css`
-          @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700;900&display=swap');
-          body {
-            margin: 0px;
-            padding: 0px;
-            box-sizing: border-box;
-            font-family: 'Red Hat Display', sans-serif;
-            background-color: hsl(225, 100%, 94%);
-          }
-        `}
-      />
-      <div css={titleWrapper}>
-        <h1 css={title}>ChatApp</h1>
-        <img src={Logo} alt='Icon' css={titleLogo} />
+      <Global styles={globalStyling} />
+      <div css={pageWrapper}>
+        <Header />
+        <Outlet context={appContext} />
       </div>
-      <Outlet
-        context={{
-          isLoggedIn: isLoggedIn,
-          setIsLoggedIn: setIsLoggedIn,
-          socket: socket,
-          userName: userName,
-        }}
-      />
     </div>
   );
 }
@@ -63,19 +50,17 @@ const useSessionValidator = (setIsLoggedIn, setUserName) => {
   }, [setIsLoggedIn, redirect]);
 };
 
-const titleLogo = css`
-  width: auto;
-  height: 4.5rem;
-  margin: auto 0;
+const globalStyling = css`
+  @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700;900&display=swap');
+  body {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Red Hat Display', sans-serif;
+    background-color: hsl(225, 100%, 94%);
+  }
 `;
 
-const titleWrapper = css`
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-`;
-const title = css`
-  font-weight: 900;
-  font-size: 3rem;
-  text-align: center;
+const pageWrapper = css`
+  max-height: 100vh;
 `;

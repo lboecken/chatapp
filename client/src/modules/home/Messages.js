@@ -1,33 +1,27 @@
-import { useContextManager } from 'modules/common/utilities';
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+import NewMessageForm from 'modules/home/NewMessageForm';
+import AllMessagesContainer from 'modules/home/AllMessagesContainer';
 
-function Messages({ messages }) {
-  const { userName } = useContextManager();
+function Messages({ messages, socket, setNewMessage, newMessage }) {
   return (
-    <div className='MessagesContainer'>
-      <ul className='Messages'>
-        {messages.map((message) => {
-          return (
-            <li
-              className={
-                ifSelf(userName, message.userName)
-                  ? 'selfMessage'
-                  : 'otherMessage'
-              }
-              key={message.timestamp + '_' + message.userName}>
-              <h4>{message.userName}</h4>
-              {message.message}
-            </li>
-          );
-        })}
-      </ul>
+    <div css={messagesOuterContainer}>
+      <AllMessagesContainer messages={messages} />
+      <NewMessageForm
+        socket={socket}
+        setNewMessage={setNewMessage}
+        newMessage={newMessage}
+      />
     </div>
   );
 }
 
 export default Messages;
 
-function ifSelf(currentUserName, messageUserName) {
-  console.log(currentUserName, messageUserName);
-  if (currentUserName === messageUserName) return true;
-  return false;
-}
+const messagesOuterContainer = css`
+  margin: auto;
+  max-width: 750px;
+  min-width: 350px;
+  background: hsl(224, 23%, 55%);
+  border-radius: 1rem;
+`;

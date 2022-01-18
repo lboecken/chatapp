@@ -1,7 +1,7 @@
-
-import Navbar from 'modules/home/RoomsNavbar';
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+import Navbar from 'modules/home/Navbar';
 import Messages from 'modules/home/Messages';
-import NewMessageForm from 'modules/home/NewMessageForm';
 import { useContextManager } from 'modules/common/utilities';
 import {
   useMessages,
@@ -21,15 +21,15 @@ function Home() {
   useSocketIOSubscription(dispatchMessages, socket);
 
   return (
-    <div className='Home'>
+    <div css={homeWrapper}>
       <Navbar
         currentRoom={currentRoom}
         setIsLoggedIn={setIsLoggedIn}
         setCurrentRoom={setCurrentRoom}
         possibleRooms={availableRooms['data']}
       />
-      <Messages messages={allMessages} />
-      <NewMessageForm
+      <Messages
+        messages={allMessages}
         socket={socket}
         setNewMessage={setNewMessage}
         newMessage={newMessage}
@@ -39,3 +39,8 @@ function Home() {
 }
 
 export default Home;
+
+const homeWrapper = css`
+  display: flex;
+  flex-direction: column;
+`;

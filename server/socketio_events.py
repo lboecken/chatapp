@@ -44,8 +44,11 @@ def handle_load_all_messages():
     query = db.session.query(Messages).filter(
         Messages.room_id == session.get('room')).all()
     for entry in query:
+        print(entry.id)
         updated_entry = {'message': entry.message,
                          'timestamp': entry.timestamp_utc,
+                         'id': entry.id,
                          'userName': entry.user.username}
-        db_messages.insert(0, updated_entry)
+        db_messages.append(updated_entry)
+
     return {'db_messages': db_messages}

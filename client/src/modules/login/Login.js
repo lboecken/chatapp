@@ -6,7 +6,7 @@ import { css } from '@emotion/react';
 function loginUser(data, redirect, setIsLoggedIn) {
   axios.post('../api/login', data).then((response) => {
     if (response.data !== 'logged in ') {
-      console.log(response);
+      alert('Please check the credentials provided');
     } else {
       setIsLoggedIn(true);
       redirect('../', { replace: true });

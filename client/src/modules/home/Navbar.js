@@ -1,12 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import Button from 'modules/common/Button';
 import axios from 'axios';
-import cssLogo from 'modules/icons/CSS.svg';
-import javascriptLogo from 'modules/icons/Javascript.svg';
-import pythonLogo from 'modules/icons/Python.svg';
-import reactLogo from 'modules/icons/React.svg';
-import htmlLogo from 'modules/icons/HTML.svg';
+import { icons } from 'modules/icons/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,28 +13,23 @@ function Navbar({ setCurrentRoom, possibleRooms, setIsLoggedIn }) {
           possibleRooms.map((room) => {
             return (
               <button
+                key={room}
                 css={roomButton}
                 onClick={(e) => {
                   e.preventDefault();
                   setCurrentRoom(room);
                 }}>
-                <img
-                  src={getSVG(room)}
-                  viewbox='0 0 512 512'
-                  alt='Icon'
-                  width='100%'
-                  height='auto'
-                />
+                <img src={getSVG(room)} alt='Icon' width='100%' height='auto' />
               </button>
             );
           })}
       </div>
       <button
+        key='logout'
         css={logoutButton}
         onClick={function Logout() {
           setIsLoggedIn(false);
           axios.post('../api/logout');
-          console.log('log out ran');
         }}>
         <FontAwesomeIcon icon={faSignOutAlt} />
       </button>
@@ -52,15 +42,15 @@ export default Navbar;
 function getSVG(room) {
   switch (room) {
     case 'CSS':
-      return cssLogo;
+      return icons.css;
     case 'Javascript':
-      return javascriptLogo;
+      return icons.javascript;
     case 'Python':
-      return pythonLogo;
+      return icons.python;
     case 'React':
-      return reactLogo;
+      return icons.react;
     case 'HTML':
-      return htmlLogo;
+      return icons.html;
     default:
       return true;
   }
@@ -74,6 +64,7 @@ const logoutButton = css`
   height: auto;
   background: hsl(223, 47%, 23%);
   border-radius: 1.5rem;
+  cursor: pointer;
   * {
     padding: 0;
     margin: 0;

@@ -44,14 +44,12 @@ function Register() {
 export default Register;
 
 function registerNewUser(formUsername, formPassword) {
-  console.log(formUsername, formPassword);
   axios
     .post('../api/register', {
       username: formUsername,
       password: formPassword,
     })
     .then((response) => {
-      console.log(response);
       alert('you registered successfully');
     });
 }

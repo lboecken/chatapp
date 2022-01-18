@@ -13,7 +13,7 @@ function updateMessages(messages, action) {
     case 'CLEAR_MESSAGES':
       return action.data;
     case 'NEW_MESSAGE':
-      return [action.data, ...messages];
+      return [...messages, action.data];
     case 'ALL_MESSAGES':
       return action.data;
     default:
