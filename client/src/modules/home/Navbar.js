@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 function Navbar({ setCurrentRoom, possibleRooms, setIsLoggedIn }) {
+  const redirect = useRedirector();
   return (
     <div>
       <div css={roomsNavWrapper}>
@@ -30,6 +31,7 @@ function Navbar({ setCurrentRoom, possibleRooms, setIsLoggedIn }) {
         onClick={function Logout() {
           setIsLoggedIn(false);
           axios.post('../api/logout');
+          redirect('../login', { replace: true });
         }}>
         <FontAwesomeIcon icon={faSignOutAlt} />
       </button>
