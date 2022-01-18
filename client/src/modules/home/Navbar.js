@@ -32,7 +32,7 @@ function Navbar({ setCurrentRoom, possibleRooms, setIsLoggedIn }) {
         onClick={function Logout() {
           setIsLoggedIn(false);
           axios.post('../api/logout').then(() => {
-            redirect('../login', { replace: true });
+            redirect('./login', { replace: true });
           });
         }}>
         <FontAwesomeIcon icon={faSignOutAlt} />
