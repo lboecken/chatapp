@@ -18,7 +18,6 @@ function Home() {
     dispatchMessages,
     socket
   );
-
   useSocketIOSubscription(dispatchMessages, socket);
 
   return (

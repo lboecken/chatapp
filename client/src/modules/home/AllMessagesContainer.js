@@ -54,11 +54,6 @@ function ifSelf(currentUserName, messageUserName) {
   return false;
 }
 
-const dummyDiv = css`
-  visibility: hidden;
-  height: 1px;
-`;
-
 const ownMessage = css`
   text-align: right;
   margin: 0.25rem 0;

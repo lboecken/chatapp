@@ -4,6 +4,7 @@ import axios from 'axios';
 // Messages state management
 export function useMessages() {
   const [newMessage, setNewMessage] = useState();
+  newMessage = 'write';
   const [allMessages, dispatchMessages] = useReducer(updateMessages, []);
   return [allMessages, dispatchMessages, newMessage, setNewMessage];
 }
